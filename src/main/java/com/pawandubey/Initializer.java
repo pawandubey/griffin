@@ -15,34 +15,23 @@
  */
 package com.pawandubey;
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class Griffin {
-    protected final static LinkedBlockingQueue<Path> fileQueue = new LinkedBlockingQueue<>();
+public class Initializer {
 
     /**
+     * Scaffolds out a new directory with the predefined Griffin directory
+     * structure.
      *
+     * @param rootPath
+     * @return
      */
-    public Griffin() {
-
+    public Path scaffold(Path rootPath) {
+        //TODO implement
+        return rootPath;
     }
-    /**
-     * @param args the command line arguments
-     * @throws java.io.IOException
-     */
-    public static void main(String[] args) throws IOException {
-        DirectoryCrawler crawler = new DirectoryCrawler();
-        crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
-        for (Path p : fileQueue) {
-            System.out.println(p.toString());
-        }
-    }
-
 }
