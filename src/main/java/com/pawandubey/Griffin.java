@@ -37,12 +37,22 @@ public class Griffin {
      * @param args the command line arguments
      * @throws java.io.IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         DirectoryCrawler crawler = new DirectoryCrawler();
+//        long start = System.currentTimeMillis();
         crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
-        for (Path p : fileQueue) {
-            System.out.println(p.toString());
-        }
+//        long endcrawl = (System.currentTimeMillis() - start) / 1000;
+//        for (Path p : fileQueue) {
+//            System.out.println(p.toString());
+//        }
+
+        Parser parser = new Parser();
+//        long startparse = System.currentTimeMillis();
+        parser.parse(fileQueue);
+//        long endparse = System.currentTimeMillis();
+//        long parsetime = (endparse - startparse) / 1000;
+//        long total = endparse - start;
+//        System.out.println("Crawl: " + endcrawl + " Parse: " + parsetime + " Total: " + total / 1000);
     }
 
 }
