@@ -27,11 +27,12 @@ public class Initializer {
      * Scaffolds out a new directory with the predefined Griffin directory
      * structure.
      *
-     * @param rootPath
-     * @return
+     * @param rootPath the path at which the scaffolding has to take place
+     * @param name the name to be given to the new directory
+     * @return the path to the newly created directory
      */
-    public Path scaffold(Path rootPath) {
+    public Path scaffold(Path rootPath, String name) {
         //TODO implement
-        return rootPath;
+        return rootPath.resolve(name);
     }
 }

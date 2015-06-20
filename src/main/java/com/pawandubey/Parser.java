@@ -38,6 +38,11 @@ public class Parser {
 
     private final Configuration config;
 
+    /**
+     * creates a parser with configuration set to enable safe mode HTML with
+     * extended profile from txtmark, allowing spaces in fenced code blocks and
+     * encoding set to UTF-8.
+     */
     public Parser() {
         config = Configuration.builder().enableSafeMode()
                 .forceExtentedProfile()
@@ -46,6 +51,12 @@ public class Parser {
                 .build();
     }
 
+    /**
+     * Parses the collection of files in the queue to produce HTML output
+     *
+     * @param collection the queue of files to be parsed
+     * @throws InterruptedException
+     */
     public void parse(BlockingQueue<? extends Path> collection) throws InterruptedException {
         Path p;
         String content;
@@ -56,6 +67,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Reads the content from the given path into a String object.
+     *
+     * @param p the path to the file
+     * @return the String contents
+     */
     private String readFile(Path p) {
         StringBuilder sb = new StringBuilder();
         String line;
@@ -70,9 +87,17 @@ public class Parser {
         return sb.toString();
     }
 
-    private void writeParsedFile(Path p, String content) {
+    /**
+     * Writes the given string content to the path resolved from the given path
+     * by replacing the file extension with .html.
+     *
+     * @param p the path to the file
+     * @param content the content to be written
+     */
+    private void writeParsedFile(Path p, String content) {        
         Path outputPath = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p));
-        try (BufferedWriter bw = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+        Path htmlPath = Paths.get(outputPath.toString().substring(0, p.toString().lastIndexOf('.')).concat(".html"));
+        try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
             bw.write(Processor.process(content, config));
         }
         catch (IOException ex) {

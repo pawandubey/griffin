@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +52,10 @@ public class DirectoryCrawler {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Files.createDirectory(Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir)));
+                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir));
+                if (Files.notExists(correspondingOutputPath)) {
+                    Files.createDirectory(correspondingOutputPath);
+                }
                 
                 return FileVisitResult.CONTINUE;
             }
@@ -59,7 +63,12 @@ public class DirectoryCrawler {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 try {
-                    fileQueue.put(file);
+                    if (Files.probeContentType(file).equals("text/x-markdown")) {
+                        fileQueue.put(file);
+                    }
+                    else {
+                        Files.copy(file, Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                    }
                 }
                 catch (InterruptedException ex) {
                     Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
