@@ -24,6 +24,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +41,7 @@ public class DirectoryCrawler {
     public static final String ROOTDIR = USERHOME + FILESEPARATOR + "Desktop/gtest";
     public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "src";
     public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
+    public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
 
     /**
      * Crawls the whole content directory and adds the files to the main queue
@@ -56,19 +59,80 @@ public class DirectoryCrawler {
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
-                
+
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 try {
+                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file));
+
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
                         fileQueue.put(file);
                     }
                     else {
-                        Files.copy(file, Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
                     }
+
+                }
+                catch (InterruptedException ex) {
+                    Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                return FileVisitResult.TERMINATE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    //TODO refactor this method to make use of the above method someway.
+    /**
+     * Checks if the file has been modified after the last parse event and only
+     * then adds the file into the queue for parsing, hence saving time.
+     *
+     * @param rootPath
+     * @throws IOException
+     */
+    protected void fastReadIntoQueue(Path rootPath) throws IOException {
+        Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir));
+                if (Files.notExists(correspondingOutputPath)) {
+                    Files.createDirectory(correspondingOutputPath);
+                }
+
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                try {
+                    LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
+                    LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
+                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file));
+                    if (fileModified.isAfter(lastParse)) {
+                        if (Files.probeContentType(file).equals("text/x-markdown")) {
+                            fileQueue.put(file);
+                        }
+                        else {
+                            Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    }
+                    else {
+                        Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+
                 }
                 catch (InterruptedException ex) {
                     Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
