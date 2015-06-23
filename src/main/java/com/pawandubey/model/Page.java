@@ -16,12 +16,13 @@
 package com.pawandubey.model;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class Page {
+public class Page implements Parsable {
 
     private final String title;
     private final String author;
@@ -38,6 +39,7 @@ public class Page {
     /**
      * @return the title
      */
+    @Override
     public String getTitle() {
         return title;
     }
@@ -45,6 +47,7 @@ public class Page {
     /**
      * @return the author
      */
+    @Override
     public String getAuthor() {
         return author;
     }
@@ -52,6 +55,7 @@ public class Page {
     /**
      * @return the location
      */
+    @Override
     public Path getLocation() {
         return location;
     }
@@ -59,8 +63,14 @@ public class Page {
     /**
      * @return the content
      */
+    @Override
     public String getContent() {
         return content;
+    }
+
+    @Override
+    public LocalDate getDate() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

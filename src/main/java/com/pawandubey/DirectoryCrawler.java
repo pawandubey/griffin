@@ -15,17 +15,24 @@
  */
 package com.pawandubey;
 
+import com.moandjiezana.toml.Toml;
 import static com.pawandubey.Griffin.fileQueue;
+import com.pawandubey.model.Parsable;
+import com.pawandubey.model.Post;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +49,7 @@ public class DirectoryCrawler {
     public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "src";
     public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
     public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
+    public static String author = Configurator.siteAuthor;
 
     /**
      * Crawls the whole content directory and adds the files to the main queue
@@ -51,7 +59,10 @@ public class DirectoryCrawler {
      * @throws IOException
      */
     protected void readIntoQueue(Path rootPath) throws IOException {
-        Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
+
+        cleanOutputDirectory();
+
+        Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -69,7 +80,8 @@ public class DirectoryCrawler {
                     Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file));
 
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
-                        fileQueue.put(file);
+                        Parsable parsable = createParsable(file);
+                        fileQueue.put(parsable);
                     }
                     else {
                         Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
@@ -103,7 +115,7 @@ public class DirectoryCrawler {
      * @throws IOException
      */
     protected void fastReadIntoQueue(Path rootPath) throws IOException {
-        Files.walkFileTree(rootPath, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -123,14 +135,12 @@ public class DirectoryCrawler {
                     Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file));
                     if (fileModified.isAfter(lastParse)) {
                         if (Files.probeContentType(file).equals("text/x-markdown")) {
-                            fileQueue.put(file);
+                            Parsable parsable = createParsable(file);
+                            fileQueue.put(parsable);
                         }
                         else {
                             Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
                         }
-                    }
-                    else {
-                        Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
                     }
 
                 }
@@ -150,5 +160,68 @@ public class DirectoryCrawler {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    private Parsable createParsable(Path file) {
+        Toml toml = new Toml();
+        try (BufferedReader br = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            StringBuilder header = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null && !line.equals("#####")) {
+                header.append(line).append("\n");
+            }
+            toml.parse(header.toString());
+            String title = toml.getString("title");
+            author = toml.getString("author") != null ? toml.getString("author") : author;
+            String date = toml.getString("date");
+            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy MM dd"));
+            StringBuilder content = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+
+            return new Post(title, author, publishDate, file, content.toString());
+        }
+        catch (IOException ex) {
+            Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Cleans up the output directory before running the full parse.
+     *
+     * @throws IOException When a file visit goes wrong
+     */
+    private void cleanOutputDirectory() throws IOException {
+        Path pathToClean = Paths.get(OUTPUTDIR);
+        Files.walkFileTree(pathToClean, new FileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                return FileVisitResult.TERMINATE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (!Files.isSameFile(dir, pathToClean)) {
+                    Files.delete(dir);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+        });
+
     }
 }

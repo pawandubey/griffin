@@ -16,7 +16,7 @@
 package com.pawandubey.model;
 
 import java.nio.file.Path;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  *
@@ -29,7 +29,7 @@ public interface Parsable {
 
     public String getTitle();
 
-    public LocalDateTime getDate();
+    public LocalDate getDate();
 
     public Path getLocation();
 }

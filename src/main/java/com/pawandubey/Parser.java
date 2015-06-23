@@ -19,6 +19,7 @@ import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
 import static com.pawandubey.DirectoryCrawler.OUTPUTDIR;
 import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
+import com.pawandubey.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -57,13 +58,13 @@ public class Parser {
      * @param collection the queue of files to be parsed
      * @throws InterruptedException
      */
-    public void parse(BlockingQueue<? extends Path> collection) throws InterruptedException {
-        Path p;
+    public void parse(BlockingQueue<Parsable> collection) throws InterruptedException {
+        Parsable p;
         String content;
         while (!collection.isEmpty()) {
             p = collection.take();
-            content = readFile(p);
-            writeParsedFile(p, content);
+            writeParsedFile(p, p.getContent());
+            System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
         }
     }
 
@@ -94,9 +95,13 @@ public class Parser {
      * @param p the path to the file
      * @param content the content to be written
      */
-    private void writeParsedFile(Path p, String content) {        
-        Path outputPath = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p));
-        Path htmlPath = Paths.get(outputPath.toString().substring(0, p.toString().lastIndexOf('.')).concat(".html"));
+    private void writeParsedFile(Parsable p, String content) {
+        String name = String.join("-", p.getTitle().split(" ")).concat(".html");
+
+        Path parsedDir = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent()));
+        Path htmlPath = parsedDir.resolve(name);
+
+        
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
             bw.write(Processor.process(content, config));
         }

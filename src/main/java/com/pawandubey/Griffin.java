@@ -15,8 +15,8 @@
  */
 package com.pawandubey;
 
+import com.pawandubey.model.Parsable;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -25,7 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Griffin {
-    protected final static LinkedBlockingQueue<Path> fileQueue = new LinkedBlockingQueue<>();
+    protected final static LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
 
     /**
      *
@@ -41,7 +41,7 @@ public class Griffin {
         DirectoryCrawler crawler = new DirectoryCrawler();
 //        long start = System.currentTimeMillis();
         InfoHandler info = new InfoHandler();
-        crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
+        crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
 //        long endcrawl = (System.currentTimeMillis() - start) / 1000;
 //        for (Path p : fileQueue) {
 //            System.out.println(p.toString());

@@ -16,21 +16,21 @@
 package com.pawandubey.model;
 
 import java.nio.file.Path;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class Post {
+public class Post implements Parsable {
     private final String title;
     private final String author;
     //String summary;
-    private final LocalDateTime date;
+    private final LocalDate date;
     private final Path location;
     private final String content;
 
-    public Post(String titl, String auth, LocalDateTime dat,
+    public Post(String titl, String auth, LocalDate dat,
                 Path loc, String cont) {
         title = titl;
         author = auth;
@@ -58,13 +58,15 @@ public class Post {
     /**
      * @return the date
      */
-    public LocalDateTime getDate() {
+    @Override
+    public LocalDate getDate() {
         return date;
     }
 
     /**
      * @return the location
      */
+    @Override
     public Path getLocation() {
         return location;
     }
@@ -72,6 +74,7 @@ public class Post {
     /**
      * @return the content
      */
+    @Override
     public String getContent() {
         return content;
     }

@@ -58,4 +58,5 @@ public class Configurator {
         excludeDirs = toml.getList(EXCLUDE.key);
         dateFormat = toml.getString(DATE_FORMAT.key);
     }
+
 }
