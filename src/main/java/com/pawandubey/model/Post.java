@@ -29,9 +29,10 @@ public class Post implements Parsable {
     private final LocalDate date;
     private final Path location;
     private final String content;
+    private final String slug;
 
     public Post(String titl, String auth, LocalDate dat,
-                Path loc, String cont) {
+                Path loc, String cont, String slu) {
         title = titl;
         author = auth;
         //TODO add summary option
@@ -39,6 +40,7 @@ public class Post implements Parsable {
         date = dat;
         location = loc;
         content = cont;
+        slug = slu;
     }
 
     /**
@@ -77,6 +79,14 @@ public class Post implements Parsable {
     @Override
     public String getContent() {
         return content;
+    }
+
+    /**
+     * @return the slug
+     */
+    @Override
+    public String getSlug() {
+        return slug;
     }
 
 }

@@ -32,4 +32,6 @@ public interface Parsable {
     public LocalDate getDate();
 
     public Path getLocation();
+
+    public String getSlug();
 }
