@@ -22,7 +22,6 @@ import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
 import com.pawandubey.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -91,7 +90,8 @@ public class Parser {
 
     /**
      * Writes the given string content to the path resolved from the given path
-     * by replacing the file extension with .html.
+     * by creating a directory from the given slug and then writing the contents
+     * into the index.html file inside it for pretty links.
      *
      * @param p the path to the file
      * @param content the content to be written
@@ -110,7 +110,11 @@ public class Parser {
 
         if(Files.notExists(parsedDir)){
             Files.createDirectory(parsedDir);
+<<<<<<< HEAD
+            //System.out.println("Created directory:" +parsedDir);
+=======
      //       System.out.println("Created directory:" +parsedDir);
+>>>>>>> master
         }
         Path htmlPath = parsedDir.resolve("index.html");
      //   System.out.println(p.getSlug());

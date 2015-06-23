@@ -53,6 +53,8 @@ public class Griffin {
 
         parser.parse(fileQueue);
         info.writeInfoFile();
+        Server server = new Server();
+        server.startPreview();
 //        long endparse = System.currentTimeMillis();
 //        long parsetime = (endparse - startparse) / 1000;
 //        long total = endparse - start;
