@@ -64,7 +64,7 @@ public class Parser {
         while (!collection.isEmpty()) {
             p = collection.take();
             writeParsedFile(p, p.getContent());
-            System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
+            //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
         }
     }
 
@@ -110,11 +110,9 @@ public class Parser {
 
         if(Files.notExists(parsedDir)){
             Files.createDirectory(parsedDir);
-<<<<<<< HEAD
+
             //System.out.println("Created directory:" +parsedDir);
-=======
      //       System.out.println("Created directory:" +parsedDir);
->>>>>>> master
         }
         Path htmlPath = parsedDir.resolve("index.html");
      //   System.out.println(p.getSlug());

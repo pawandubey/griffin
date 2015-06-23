@@ -19,19 +19,56 @@ import static com.pawandubey.DirectoryCrawler.OUTPUTDIR;
 import static io.undertow.Handlers.resource;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.resource.PathResourceManager;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 /**
+ * Embeds the Undertow Web Server for serving the static site for live preview,
+ * on default port 9090.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Server {
+    private final Integer port = 9090;
+
+    /**
+     * Creates and starts the server to serve the contents of OUTPUTDIR on port
+     * 9090.
+     */
     protected void startPreview() {
         Undertow server = Undertow.builder()
-                .addHttpListener(9090, "localhost")
+                .addHttpListener(port, "localhost")
                 .setHandler(resource(new PathResourceManager(Paths.get(OUTPUTDIR), 100, true))
                         .setDirectoryListingEnabled(false))
                 .build();
         server.start();
+    }
+
+    /**
+     * Opens the system's default browser and tries to navigate to the URL at
+     * which the server is operational.
+     */
+    protected void openBrowser() {
+        String url = "http://localhost:" + port;
+
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+            try {
+                desktop.browse(new URI(url));
+            }
+            catch (IOException | URISyntaxException e) {
+            }
+        }
+        else {
+            Runtime runtime = Runtime.getRuntime();
+            try {
+                runtime.exec("xdg-open " + url);
+            }
+            catch (IOException e) {
+            }
+        }
     }
 }

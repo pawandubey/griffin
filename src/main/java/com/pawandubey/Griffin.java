@@ -36,6 +36,7 @@ public class Griffin {
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
+     * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         DirectoryCrawler crawler = new DirectoryCrawler();
@@ -55,6 +56,7 @@ public class Griffin {
         info.writeInfoFile();
         Server server = new Server();
         server.startPreview();
+        server.openBrowser();
 //        long endparse = System.currentTimeMillis();
 //        long parsetime = (endparse - startparse) / 1000;
 //        long total = endparse - start;
