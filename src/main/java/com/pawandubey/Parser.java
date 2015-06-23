@@ -22,6 +22,7 @@ import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
 import com.pawandubey.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -58,7 +59,7 @@ public class Parser {
      * @param collection the queue of files to be parsed
      * @throws InterruptedException
      */
-    public void parse(BlockingQueue<Parsable> collection) throws InterruptedException {
+    public void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
         Parsable p;
         String content;
         while (!collection.isEmpty()) {
@@ -95,11 +96,16 @@ public class Parser {
      * @param p the path to the file
      * @param content the content to be written
      */
-    private void writeParsedFile(Parsable p, String content) {
-        String name = String.join("-", p.getTitle().split(" ")).concat(".html");
-
-        Path parsedDir = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent()));
-        Path htmlPath = parsedDir.resolve(name);
+    private void writeParsedFile(Parsable p, String content) throws IOException{
+        String name = String.join("-", p.getTitle().split(" "));
+        Path parsedDirParent = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent()));
+        //System.out.println(parsedDir);
+        Path parsedDir = parsedDirParent.resolve(name);
+        if(Files.notExists(parsedDir)){
+            Files.createDirectory(parsedDir);
+            System.out.println("Created directory:" +parsedDir);
+        }
+        Path htmlPath = parsedDir.resolve("index.html");
 
         
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
