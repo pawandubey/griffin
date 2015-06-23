@@ -174,13 +174,14 @@ public class DirectoryCrawler {
             String title = toml.getString("title");
             author = toml.getString("author") != null ? toml.getString("author") : author;
             String date = toml.getString("date");
+            String slug = toml.getString("slug");
             LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy MM dd"));
             StringBuilder content = new StringBuilder();
             while ((line = br.readLine()) != null) {
                 content.append(line).append("\n");
             }
 
-            return new Post(title, author, publishDate, file, content.toString());
+            return new Post(title, author, publishDate, file, content.toString(), slug);
         }
         catch (IOException ex) {
             Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
