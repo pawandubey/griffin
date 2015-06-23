@@ -49,7 +49,7 @@ public class DirectoryCrawler {
     public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "src";
     public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
     public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
-    public static String author = Configurator.siteAuthor;
+    public static String author = null;//config.siteAuthor;
 
     /**
      * Crawls the whole content directory and adds the files to the main queue

@@ -15,6 +15,7 @@
  */
 package com.pawandubey;
 
+import com.pawandubey.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -27,8 +28,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Class to track some meta information about the parsing process, including,
@@ -40,13 +43,13 @@ public class InfoHandler {
 
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd HH:mm:ss");
     static String LAST_PARSE_DATE;
-    final List<Path> latestPosts = new ArrayList<>();
+    List<String> latestPosts = new ArrayList<>();
 
     public InfoHandler() {
         try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
                                                          StandardCharsets.UTF_8)) {
             LAST_PARSE_DATE = br.readLine();
-  
+
 //            String line;
 //            while ((line = br.readLine()) != null) {
 //                latestPosts.add(Paths.get(line));
@@ -66,26 +69,22 @@ public class InfoHandler {
                                                       StandardOpenOption.WRITE,
                                                       StandardOpenOption.TRUNCATE_EXISTING)) {
             bw.write(calculateTimeStamp());
+            bw.write("\n" + String.join("\n", latestPosts));
         }
         catch (IOException ex) {
             Logger.getLogger(InfoHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    //TODO implement
-//    private String findLatestPosts(BlockingQueue<Post> collection) {
-//        Arrays.sort(collection.toArray());
-//
-//        Collections.sort(list, new Comparator<Post>() {
-//
-//            @Override
-//            public int compare(Post o1, Post o2) {
-//                return o1.getDate().compareTo(o2.getDate());
-//            }
-//
-//        });
-//
-//    }
+    //TODO refactor number of posts.
+    protected void findLatestPosts(BlockingQueue<Parsable> collection) {
+        
+        latestPosts
+        = collection.stream().sorted((a, b) -> {
+            return a.getDate().compareTo(b.getDate());
+                }).limit(5).map(p -> p.getLocation().toString()).collect(Collectors.toList());
+        
+    }
 
     private String calculateTimeStamp() {
         LocalDateTime parseTime = LocalDateTime.now();

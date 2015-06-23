@@ -25,8 +25,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Griffin {
-    protected final static LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
-
+    public final static LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
+    //public final static Configurator config = new Configurator();
     /**
      *
      */
@@ -47,9 +47,10 @@ public class Griffin {
 //            System.out.println(p.toString());
 //        }
         
-
+        info.findLatestPosts(fileQueue);
         Parser parser = new Parser();
 //        long startparse = System.currentTimeMillis();
+
         parser.parse(fileQueue);
         info.writeInfoFile();
 //        long endparse = System.currentTimeMillis();
