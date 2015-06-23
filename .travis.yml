@@ -1,0 +1,4 @@
+## YAML Template.
+---
+language: java
+jdk : oraclejdk8
