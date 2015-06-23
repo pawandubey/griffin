@@ -28,12 +28,13 @@ public class Page implements Parsable {
     private final String author;
     private final Path location;
     private final String content;
-
-    public Page(String titl, String auth, Path loc, String cont) {
+    private final String slug;
+    public Page(String titl, String auth, Path loc, String cont, String slu) {
         author = auth;
         title = titl;
         location = loc;
         content = cont;
+        slug = slu;
     }
 
     /**
@@ -66,6 +67,14 @@ public class Page implements Parsable {
     @Override
     public String getContent() {
         return content;
+    }
+
+    /**
+     * @return the slug
+     */
+    @Override
+    public String getSlug() {
+        return slug;
     }
 
     @Override
