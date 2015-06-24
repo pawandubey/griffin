@@ -49,11 +49,6 @@ public class InfoHandler {
         try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
                                                          StandardCharsets.UTF_8)) {
             LAST_PARSE_DATE = br.readLine();
-
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                latestPosts.add(Paths.get(line));
-//            }
         }
         catch (IOException ex) {
             Logger.getLogger(InfoHandler.class.getName()).log(Level.SEVERE, null, ex);

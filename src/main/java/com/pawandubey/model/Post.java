@@ -86,7 +86,12 @@ public class Post implements Parsable {
      */
     @Override
     public String getSlug() {
-        return slug;
+        if (slug == null || slug.equals(" ")) {
+            return String.join("-", title.toLowerCase().split(" "));
+        }
+        else {
+            return String.join("-", slug.toLowerCase().split(" "));
+        }
     }
 
 }

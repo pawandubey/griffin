@@ -44,8 +44,6 @@ public class Griffin {
         InfoHandler info = new InfoHandler();
         crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
 //        long endcrawl = (System.currentTimeMillis() - start) / 1000;
-//        for (Path p : fileQueue) {
-//            System.out.println(p.toString());
 //        }
         
         info.findLatestPosts(fileQueue);

@@ -97,26 +97,15 @@ public class Parser {
      * @param content the content to be written
      */
     private void writeParsedFile(Parsable p, String content) throws IOException {
-        String name = String.join("-", p.getTitle().split(" "));
+        String name = p.getSlug();
         Path parsedDirParent = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent()));
-        Path parsedDir;
-        if ( p.getSlug() == null) {
-            parsedDir = parsedDirParent.resolve(name);
-        }
-        else {
-            String slug = String.join("-", p.getSlug().split(" "));
-            parsedDir = parsedDirParent.resolve(slug);
-        }
-
-        if(Files.notExists(parsedDir)){
+        Path parsedDir = parsedDirParent.resolve(name);
+        
+        if (Files.notExists(parsedDir)) {
             Files.createDirectory(parsedDir);
-
-            //System.out.println("Created directory:" +parsedDir);
-     //       System.out.println("Created directory:" +parsedDir);
         }
         Path htmlPath = parsedDir.resolve("index.html");
-     //   System.out.println(p.getSlug());
-        
+
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
             bw.write(Processor.process(content, config));
         }
