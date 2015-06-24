@@ -16,10 +16,14 @@
 package com.pawandubey;
 
 import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
+import com.google.gson.Gson;
 import static com.pawandubey.DirectoryCrawler.FILESEPARATOR;
 import static com.pawandubey.DirectoryCrawler.ROOTDIR;
+import com.pawandubey.model.Parsable;
+import java.io.IOException;
 
 /**
  *
@@ -29,8 +33,10 @@ public class Renderer {
 
     private String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/hyde/layouts";
 
-    protected void render() {
+    protected void render(Parsable parsable) throws IOException {
         TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
         Handlebars handlebar = new Handlebars(loader);
+        Template template = handlebar.compile("index");
+        template.apply(new Gson().toJson(parsable));
     }
 }
