@@ -19,11 +19,12 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import com.google.gson.Gson;
 import static com.pawandubey.DirectoryCrawler.FILESEPARATOR;
 import static com.pawandubey.DirectoryCrawler.ROOTDIR;
 import com.pawandubey.model.Parsable;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -31,12 +32,15 @@ import java.io.IOException;
  */
 public class Renderer {
 
-    private String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/hyde/layouts";
+    public final static String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/";
 
-    protected void render(Parsable parsable) throws IOException {
+    protected static String render(Parsable parsable, String content) throws IOException {
         TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
         Handlebars handlebar = new Handlebars(loader);
-        Template template = handlebar.compile("index");
-        template.apply(new Gson().toJson(parsable));
+        Template template = handlebar.compile("post");
+        Map<String, Object> map = new HashMap<>();
+        map.put("post", parsable);
+        map.put("content", content);
+        return template.apply(map);
     }
 }

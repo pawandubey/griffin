@@ -107,7 +107,7 @@ public class Parser {
         Path htmlPath = parsedDir.resolve("index.html");
 
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
-            bw.write(Processor.process(content, config));
+            bw.write(Renderer.render(p, Processor.process(content, config)));
         }
         catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
