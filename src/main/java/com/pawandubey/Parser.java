@@ -38,13 +38,15 @@ import java.util.logging.Logger;
 public class Parser {
 
     private final Configuration config;
-
+    private final Renderer renderer;
     /**
      * creates a parser with configuration set to enable safe mode HTML with
      * extended profile from txtmark, allowing spaces in fenced code blocks and
      * encoding set to UTF-8.
+     * @throws java.io.IOException
      */
-    public Parser() {
+    public Parser() throws IOException {
+        renderer = new Renderer();
         config = Configuration.builder().enableSafeMode()
                 .forceExtentedProfile()
                 .setAllowSpacesInFencedCodeBlockDelimiters(true)
@@ -116,7 +118,7 @@ public class Parser {
         Path htmlPath = parsedDir.resolve("index.html");
 
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
-            bw.write(Renderer.renderParsable(p, Processor.process(content, config)));
+            bw.write(renderer.renderParsable(p, Processor.process(content, config)));
         }
         catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);

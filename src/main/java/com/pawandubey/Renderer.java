@@ -34,15 +34,23 @@ import java.util.Map;
 public class Renderer {
 
     public final static String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/" + config.getTheme();
+    private final TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
+    private final Handlebars handlebar = new Handlebars(loader);
+    private final Template postTemplate;
+    //private final Template pageTemplate;
+    private final Template indexTemplate;
 
-    protected static String renderParsable(Parsable parsable, String content) throws IOException {
-        TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
-        Handlebars handlebar = new Handlebars(loader);
-        Template template = handlebar.compile(parsable.getLayout());
+    public Renderer() throws IOException {
+        postTemplate = handlebar.compile("post");
+        //pageTemplate = handlebar.compile("page");
+        indexTemplate = handlebar.compile("index");
+    }
+
+    protected String renderParsable(Parsable parsable, String content) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("post", parsable);
         map.put("content", content);
-        return template.apply(map);
+        return postTemplate.apply(map);
     }
 
     protected static String renderIndex() throws IOException {
