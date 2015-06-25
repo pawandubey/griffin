@@ -48,6 +48,7 @@ public class Renderer {
 
     protected String renderParsable(Parsable parsable, String content) throws IOException {
         Map<String, Object> map = new HashMap<>();
+        map.put("config", config);
         map.put("post", parsable);
         map.put("content", content);
         return postTemplate.apply(map);
