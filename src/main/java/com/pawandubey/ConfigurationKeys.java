@@ -21,9 +21,15 @@ package com.pawandubey;
  */
 public enum ConfigurationKeys {
 
-    SITE_NAME("sitename"), SITE_AUTHOR("siteauthor"), SITE_BASE_URL("sitebaseurl"),
-    SITE_TAGLINE("sitetagline"), SOURCE_DIR("source"), OUTPUT_DIR("output"),
-    EXCLUDE("exclude"), DATE_FORMAT("dateformat"), THEME("theme");
+    SITE_NAME("sitename"),
+    SITE_AUTHOR("siteauthor"),
+    SITE_BASE_URL("sitebaseurl"),
+    SITE_TAGLINE("sitetagline"),
+    SOURCE_DIR("source"),
+    OUTPUT_DIR("output"),
+    EXCLUDE("exclude"),
+    DATE_FORMAT("dateformat"),
+    THEME("theme");
 
     public final String key;
 
