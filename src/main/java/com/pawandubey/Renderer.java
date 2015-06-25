@@ -38,7 +38,7 @@ public class Renderer {
     protected static String renderParsable(Parsable parsable, String content) throws IOException {
         TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
         Handlebars handlebar = new Handlebars(loader);
-        Template template = handlebar.compile("post");
+        Template template = handlebar.compile(parsable.getLayout());
         Map<String, Object> map = new HashMap<>();
         map.put("post", parsable);
         map.put("content", content);
