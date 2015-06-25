@@ -26,18 +26,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 /**
- * Embeds the Undertow Web Server for serving the static site for live preview,
- * on default port 9090.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Server {
     private final Integer port = 9090;
-
-    /**
-     * Creates and starts the server to serve the contents of OUTPUTDIR on port
-     * 9090.
-     */
     protected void startPreview() {
         Undertow server = Undertow.builder()
                 .addHttpListener(port, "localhost")
@@ -47,10 +40,6 @@ public class Server {
         server.start();
     }
 
-    /**
-     * Opens the system's default browser and tries to navigate to the URL at
-     * which the server is operational.
-     */
     protected void openBrowser() {
         String url = "http://localhost:" + port;
 

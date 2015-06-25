@@ -57,6 +57,7 @@ public class Parser {
      *
      * @param collection the queue of files to be parsed
      * @throws InterruptedException
+     * @throws java.io.IOException
      */
     public void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
         Parsable p;
@@ -65,6 +66,14 @@ public class Parser {
             p = collection.take();
             writeParsedFile(p, p.getContent());
             //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
+        }
+        if (Files.notExists(Paths.get(OUTPUTDIR).resolve("index.html"))) {
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUTDIR).resolve("index.html"), StandardCharsets.UTF_8)) {
+                bw.write(Renderer.renderIndex());
+            }
+            catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -107,10 +116,10 @@ public class Parser {
         Path htmlPath = parsedDir.resolve("index.html");
 
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
-            bw.write(Renderer.render(p, Processor.process(content, config)));
+            bw.write(Renderer.renderParsable(p, Processor.process(content, config)));
         }
         catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }        
     }
 }

@@ -21,6 +21,7 @@ import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import static com.pawandubey.DirectoryCrawler.FILESEPARATOR;
 import static com.pawandubey.DirectoryCrawler.ROOTDIR;
+import static com.pawandubey.Griffin.config;
 import com.pawandubey.model.Parsable;
 import java.io.IOException;
 import java.util.HashMap;
@@ -32,15 +33,25 @@ import java.util.Map;
  */
 public class Renderer {
 
-    public final static String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/";
+    public final static String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/" + config.getTheme();
 
-    protected static String render(Parsable parsable, String content) throws IOException {
+    protected static String renderParsable(Parsable parsable, String content) throws IOException {
         TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
         Handlebars handlebar = new Handlebars(loader);
         Template template = handlebar.compile("post");
         Map<String, Object> map = new HashMap<>();
         map.put("post", parsable);
         map.put("content", content);
+        return template.apply(map);
+    }
+
+    protected static String renderIndex() throws IOException {
+        TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
+        Handlebars handlebar = new Handlebars(loader);
+        Template template = handlebar.compile("index");
+        Map<String, Object> map = new HashMap<>();
+        map.put("config", config);
+        map.put("latestposts", InfoHandler.latestPosts);
         return template.apply(map);
     }
 }

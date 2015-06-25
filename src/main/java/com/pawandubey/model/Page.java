@@ -15,7 +15,9 @@
  */
 package com.pawandubey.model;
 
+import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 /**
@@ -29,12 +31,16 @@ public class Page implements Parsable {
     private final Path location;
     private final String content;
     private final String slug;
-    public Page(String titl, String auth, Path loc, String cont, String slu) {
+    private final String layout;
+    private String permalink;
+
+    public Page(String titl, String auth, Path loc, String cont, String slu, String lay) {
         author = auth;
         title = titl;
         location = loc;
         content = cont;
         slug = slu;
+        layout = lay;
     }
 
     /**
@@ -85,6 +91,18 @@ public class Page implements Parsable {
     @Override
     public LocalDate getDate() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getLayout() {
+        return layout;
+    }
+
+    @Override
+    public String getPermalink() {
+        Path parentDir = Paths.get(SOURCEDIR).relativize(location.getParent());
+        permalink = parentDir.resolve(getSlug()).toString();
+        return permalink;
     }
 
 }

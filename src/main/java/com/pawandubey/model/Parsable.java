@@ -34,4 +34,8 @@ public interface Parsable {
     public Path getLocation();
 
     public String getSlug();
+
+    public String getLayout();
+
+    public String getPermalink();
 }

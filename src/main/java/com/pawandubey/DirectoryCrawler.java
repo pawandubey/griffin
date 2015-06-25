@@ -16,6 +16,7 @@
 package com.pawandubey;
 
 import com.moandjiezana.toml.Toml;
+import static com.pawandubey.Griffin.config;
 import static com.pawandubey.Griffin.fileQueue;
 import com.pawandubey.model.Parsable;
 import com.pawandubey.model.Post;
@@ -175,13 +176,14 @@ public class DirectoryCrawler {
             author = toml.getString("author") != null ? toml.getString("author") : author;
             String date = toml.getString("date");
             String slug = toml.getString("slug");
-            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy MM dd"));
+            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(config.getDateFormat()));
+            String layout = toml.getString("layout");
             StringBuilder content = new StringBuilder();
             while ((line = br.readLine()) != null) {
                 content.append(line).append("\n");
             }
 
-            return new Post(title, author, publishDate, file, content.toString(), slug);
+            return new Post(title, author, publishDate, file, content.toString(), slug, layout);
         }
         catch (IOException ex) {
             Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);

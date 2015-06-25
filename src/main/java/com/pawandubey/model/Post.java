@@ -15,7 +15,9 @@
  */
 package com.pawandubey.model;
 
+import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 /**
@@ -30,9 +32,11 @@ public class Post implements Parsable {
     private final Path location;
     private final String content;
     private final String slug;
+    private final String layout;
+    private String permalink;
 
     public Post(String titl, String auth, LocalDate dat,
-                Path loc, String cont, String slu) {
+                Path loc, String cont, String slu, String lay) {
         title = titl;
         author = auth;
         //TODO add summary option
@@ -41,6 +45,7 @@ public class Post implements Parsable {
         location = loc;
         content = cont;
         slug = slu;
+        layout = lay;
     }
 
     /**
@@ -92,6 +97,18 @@ public class Post implements Parsable {
         else {
             return String.join("-", slug.trim().toLowerCase().split(" "));
         }
+    }
+
+    @Override
+    public String getLayout() {
+        return layout;
+    }
+
+    @Override
+    public String getPermalink() {
+        Path parentDir = Paths.get(SOURCEDIR).relativize(location.getParent());
+        permalink = parentDir.resolve(getSlug()).toString();
+        return permalink;
     }
 
 }

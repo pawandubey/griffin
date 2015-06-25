@@ -43,7 +43,7 @@ public class InfoHandler {
 
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd HH:mm:ss");
     static String LAST_PARSE_DATE;
-    List<String> latestPosts = new ArrayList<>();
+    protected static List<Parsable> latestPosts = new ArrayList<>();
 
     public InfoHandler() {
         try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
@@ -64,7 +64,9 @@ public class InfoHandler {
                                                       StandardOpenOption.WRITE,
                                                       StandardOpenOption.TRUNCATE_EXISTING)) {
             bw.write(calculateTimeStamp());
-            bw.write("\n" + String.join("\n", latestPosts));
+            bw.write("\n" + String.join("\n", latestPosts.stream()
+                                        .map(p -> p.getLocation().toString())
+                                        .collect(Collectors.toList())));
         }
         catch (IOException ex) {
             Logger.getLogger(InfoHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,7 +79,7 @@ public class InfoHandler {
         latestPosts
         = collection.stream().sorted((a, b) -> {
             return a.getDate().compareTo(b.getDate());
-                }).limit(5).map(p -> p.getLocation().toString()).collect(Collectors.toList());
+                }).limit(5).collect(Collectors.toList());
         
     }
 

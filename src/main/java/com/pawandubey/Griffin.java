@@ -26,7 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Griffin {
     public final static LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
-    //public final static Configurator config = new Configurator();
+    public final static Configurator config = new Configurator();
     /**
      *
      */
