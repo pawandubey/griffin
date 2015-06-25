@@ -15,14 +15,18 @@
  */
 package com.pawandubey;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.zeroturnaround.zip.ZipUtil;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Initializer {
-
+    private final String zipp = Paths.get(ClassLoader.getSystemClassLoader().getResource(".").getPath()).getParent().toString();
     /**
      * Scaffolds out a new directory with the predefined Griffin directory
      * structure.
@@ -30,9 +34,14 @@ public class Initializer {
      * @param rootPath the path at which the scaffolding has to take place
      * @param name the name to be given to the new directory
      * @return the path to the newly created directory
+     * @throws java.io.IOException
      */
-    public Path scaffold(Path rootPath, String name) {
-        //TODO implement
+    public Path scaffold(Path rootPath, String name) throws IOException {
+        unzipStructure(rootPath.resolve(name));
         return rootPath.resolve(name);
+    }
+
+    private void unzipStructure(Path path) throws IOException {
+        ZipUtil.unpack(new File(zipp + File.separator + "scaffold.zip"), path.toFile());
     }
 }

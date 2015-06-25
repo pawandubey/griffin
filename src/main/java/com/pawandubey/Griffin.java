@@ -45,7 +45,7 @@ public class Griffin {
         crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
 //        long endcrawl = (System.currentTimeMillis() - start) / 1000;
 //        }
-        
+
         info.findLatestPosts(fileQueue);
         Parser parser = new Parser();
 //        long startparse = System.currentTimeMillis();
@@ -58,7 +58,7 @@ public class Griffin {
 //        long endparse = System.currentTimeMillis();
 //        long parsetime = (endparse - startparse) / 1000;
 //        long total = endparse - start;
-//        System.out.println("Crawl: " + endcrawl + " Parse: " + parsetime + " Total: " + total / 1000);
+//        System.out.println("Crawl: " + endcrawl + " Parse: " + parsetime + " Total: " + total / 1000);        
     }
 
 }
