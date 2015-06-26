@@ -78,7 +78,7 @@ public class InfoHandler {
         
         latestPosts
         = collection.stream().sorted((a, b) -> {
-            return a.getDate().compareTo(b.getDate());
+            return b.getDate().compareTo(a.getDate());
                 }).limit(5).collect(Collectors.toList());
         
     }
