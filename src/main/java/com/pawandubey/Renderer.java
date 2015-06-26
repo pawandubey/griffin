@@ -37,30 +37,31 @@ public class Renderer {
     private final TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
     private final Handlebars handlebar = new Handlebars(loader);
     private final Template postTemplate;
-    //private final Template pageTemplate;
+    private final Template pageTemplate;
     private final Template indexTemplate;
 
     public Renderer() throws IOException {
         postTemplate = handlebar.compile("post");
-        //pageTemplate = handlebar.compile("page");
+        pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");
     }
 
-    protected String renderParsable(Parsable parsable, String content) throws IOException {
+    protected String renderParsable(Parsable parsable) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", config);
         map.put("post", parsable);
-        map.put("content", content);
-        return postTemplate.apply(map);
+        if (parsable.getLayout().equals("post")) {
+            return postTemplate.apply(map);
+        }
+        else {
+            return pageTemplate.apply(map);
+        }
     }
 
-    protected static String renderIndex() throws IOException {
-        TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
-        Handlebars handlebar = new Handlebars(loader);
-        Template template = handlebar.compile("index");
+    protected String renderIndex() throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", config);
         map.put("latestposts", InfoHandler.latestPosts);
-        return template.apply(map);
+        return indexTemplate.apply(map);
     }
 }

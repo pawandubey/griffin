@@ -39,10 +39,13 @@ public class Parser {
 
     private final Configuration config;
     private final Renderer renderer;
+    private String parsedContent;
+
     /**
      * creates a parser with configuration set to enable safe mode HTML with
      * extended profile from txtmark, allowing spaces in fenced code blocks and
      * encoding set to UTF-8.
+     *
      * @throws java.io.IOException
      */
     public Parser() throws IOException {
@@ -66,12 +69,12 @@ public class Parser {
         String content;
         while (!collection.isEmpty()) {
             p = collection.take();
-            writeParsedFile(p, p.getContent());
+            writeParsedFile(p);
             //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
         }
         if (Files.notExists(Paths.get(OUTPUTDIR).resolve("index.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUTDIR).resolve("index.html"), StandardCharsets.UTF_8)) {
-                bw.write(Renderer.renderIndex());
+                bw.write(renderer.renderIndex());
             }
             catch (IOException ex) {
                 Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,28 +103,29 @@ public class Parser {
     }
 
     /**
-     * Writes the given string content to the path resolved from the given path
-     * by creating a directory from the given slug and then writing the contents
+     * Writes the content of the Parsable to the path resolved from the slug by
+     * creating a directory from the given slug and then writing the contents
      * into the index.html file inside it for pretty links.
      *
-     * @param p the path to the file
-     * @param content the content to be written
+     * @param p the Parsable instance
      */
-    private void writeParsedFile(Parsable p, String content) throws IOException {
+    private void writeParsedFile(Parsable p) throws IOException {
         String name = p.getSlug();
         Path parsedDirParent = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent()));
         Path parsedDir = parsedDirParent.resolve(name);
-        
+
         if (Files.notExists(parsedDir)) {
             Files.createDirectory(parsedDir);
         }
         Path htmlPath = parsedDir.resolve("index.html");
 
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
-            bw.write(renderer.renderParsable(p, Processor.process(content, config)));
+            parsedContent = Processor.process(p.getContent(), config);
+            p.setContent(parsedContent);
+            bw.write(renderer.renderParsable(p));
         }
         catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }
     }
 }

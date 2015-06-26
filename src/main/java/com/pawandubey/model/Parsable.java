@@ -25,6 +25,8 @@ import java.time.LocalDate;
 public interface Parsable {
     public String getContent();
 
+    public void setContent(String content);
+
     public String getAuthor();
 
     public String getTitle();

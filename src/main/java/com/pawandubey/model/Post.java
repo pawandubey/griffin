@@ -30,7 +30,7 @@ public class Post implements Parsable {
     //String summary;
     private final LocalDate date;
     private final Path location;
-    private final String content;
+    private String content;
     private final String slug;
     private final String layout;
     private String permalink;
@@ -109,6 +109,11 @@ public class Post implements Parsable {
         Path parentDir = Paths.get(SOURCEDIR).relativize(location.getParent());
         permalink = parentDir.resolve(getSlug()).toString();
         return permalink;
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.content = content;
     }
 
 }
