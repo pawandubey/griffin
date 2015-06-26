@@ -16,7 +16,10 @@
 package com.pawandubey;
 
 import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.helper.DefaultHelperRegistry;
+import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import static com.pawandubey.DirectoryCrawler.FILESEPARATOR;
@@ -35,12 +38,33 @@ public class Renderer {
 
     public final static String templateRoot = ROOTDIR + FILESEPARATOR + "assets" + FILESEPARATOR + "templates/" + config.getTheme();
     private final TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
-    private final Handlebars handlebar = new Handlebars(loader);
+    private final Handlebars handlebar = new Handlebars(loader).with(new DefaultHelperRegistry()).registerHelpers(StringHelpers.class);
     private final Template postTemplate;
     private final Template pageTemplate;
     private final Template indexTemplate;
 
     public Renderer() throws IOException {
+        handlebar.registerHelper("ifis", (Object t, Options optns) -> {
+            if (t instanceof String) {
+                String ts = (String) t;
+                if (ts.equals(optns.param(0))) {
+                    return optns.fn(t);
+                }
+                else {
+                    return null;
+                }
+            }
+            else if (t instanceof Number) {
+                Number tn = (Number) t;
+                if (tn == optns.param(0)) {
+                    return optns.fn(t);
+                }
+                else {
+                    return null;
+                }
+            }
+            return null;
+        });
         postTemplate = handlebar.compile("post");
         pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");
@@ -50,6 +74,7 @@ public class Renderer {
         Map<String, Object> map = new HashMap<>();
         map.put("config", config);
         map.put("post", parsable);
+        map.put("navpages", InfoHandler.navPages);
         if (parsable.getLayout().equals("post")) {
             return postTemplate.apply(map);
         }
@@ -62,6 +87,7 @@ public class Renderer {
         Map<String, Object> map = new HashMap<>();
         map.put("config", config);
         map.put("latestposts", InfoHandler.latestPosts);
+        map.put("navpages", InfoHandler.navPages);
         return indexTemplate.apply(map);
     }
 }

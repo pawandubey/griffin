@@ -47,6 +47,7 @@ public class Griffin {
 //        }
         
         info.findLatestPosts(fileQueue);
+        info.findNavigationPages(fileQueue);
         Parser parser = new Parser();
 //        long startparse = System.currentTimeMillis();
 

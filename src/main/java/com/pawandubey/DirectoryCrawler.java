@@ -18,6 +18,7 @@ package com.pawandubey;
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.Griffin.config;
 import static com.pawandubey.Griffin.fileQueue;
+import com.pawandubey.model.Page;
 import com.pawandubey.model.Parsable;
 import com.pawandubey.model.Post;
 import java.io.BufferedReader;
@@ -34,6 +35,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -178,12 +180,17 @@ public class DirectoryCrawler {
             String slug = toml.getString("slug");
             LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(config.getDateFormat()));
             String layout = toml.getString("layout");
+            List<String> tag = toml.getList("tags");
             StringBuilder content = new StringBuilder();
             while ((line = br.readLine()) != null) {
                 content.append(line).append("\n");
             }
-
-            return new Post(title, author, publishDate, file, content.toString(), slug, layout);
+            if (layout.equals("post")) {
+                return new Post(title, author, publishDate, file, content.toString(), slug, layout, tag);
+            }
+            else {
+                return new Page(title, author, file, content.toString(), slug, layout, tag);
+            }
         }
         catch (IOException ex) {
             Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);

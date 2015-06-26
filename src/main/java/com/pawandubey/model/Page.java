@@ -19,6 +19,7 @@ import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -33,14 +34,16 @@ public class Page implements Parsable {
     private final String slug;
     private final String layout;
     private String permalink;
+    private final List<String> tags;
 
-    public Page(String titl, String auth, Path loc, String cont, String slu, String lay) {
+    public Page(String titl, String auth, Path loc, String cont, String slu, String lay, List<String> tag) {
         author = auth;
         title = titl;
         location = loc;
         content = cont;
         slug = slu;
         layout = lay;
+        tags = tag;
     }
 
     /**
@@ -108,6 +111,11 @@ public class Page implements Parsable {
     @Override
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public List<String> getTags() {
+        return tags;
     }
 
 }

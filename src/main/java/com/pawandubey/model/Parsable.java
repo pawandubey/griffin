@@ -17,6 +17,7 @@ package com.pawandubey.model;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -40,4 +41,6 @@ public interface Parsable {
     public String getLayout();
 
     public String getPermalink();
+
+    public List<String> getTags();
 }
