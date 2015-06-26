@@ -18,6 +18,7 @@ package com.pawandubey;
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.Griffin.config;
 import static com.pawandubey.Griffin.fileQueue;
+import static com.pawandubey.Renderer.templateRoot;
 import com.pawandubey.model.Page;
 import com.pawandubey.model.Parsable;
 import com.pawandubey.model.Post;
@@ -29,6 +30,7 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
@@ -53,6 +55,7 @@ public class DirectoryCrawler {
     public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
     public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
     public static String author = null;//config.siteAuthor;
+    public final String DELIMITER = "#####";
 
     /**
      * Crawls the whole content directory and adds the files to the main queue
@@ -64,6 +67,8 @@ public class DirectoryCrawler {
     protected void readIntoQueue(Path rootPath) throws IOException {
 
         cleanOutputDirectory();
+
+        copyAssets();
 
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
@@ -118,6 +123,9 @@ public class DirectoryCrawler {
      * @throws IOException
      */
     protected void fastReadIntoQueue(Path rootPath) throws IOException {
+
+        copyAssets();
+
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
@@ -170,7 +178,7 @@ public class DirectoryCrawler {
         try (BufferedReader br = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
             StringBuilder header = new StringBuilder();
             String line;
-            while ((line = br.readLine()) != null && !line.equals("#####")) {
+            while ((line = br.readLine()) != null && !line.equals(DELIMITER)) {
                 header.append(line).append("\n");
             }
             toml.parse(header.toString());
@@ -233,5 +241,39 @@ public class DirectoryCrawler {
 
         });
 
+    }
+
+    /**
+     * Copies the assets i.e images, CSS, JS etc needed by the theme to the
+     * output directory.
+     *
+     * @throws IOException
+     */
+    private void copyAssets() throws IOException {
+        Path assetsPath = Paths.get(templateRoot, "assets");
+        Path outputAssetsPath = Paths.get(OUTPUTDIR, "assets");
+        Files.createDirectory(outputAssetsPath);
+        Files.walkFileTree(assetsPath, new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Path correspondingOutputPath = outputAssetsPath.resolve(assetsPath.relativize(dir));
+                if (Files.notExists(correspondingOutputPath)) {
+                    Files.createDirectory(correspondingOutputPath);
+                }
+
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Path resolvedPath = outputAssetsPath.resolve(assetsPath.relativize(file));
+
+                Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
+
+                return FileVisitResult.CONTINUE;
+            }
+
+        });
     }
 }

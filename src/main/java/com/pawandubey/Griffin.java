@@ -40,26 +40,26 @@ public class Griffin {
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         DirectoryCrawler crawler = new DirectoryCrawler();
-        long start = System.currentTimeMillis();
+//        long start = System.currentTimeMillis();
         InfoHandler info = new InfoHandler();
         crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
-        long endcrawl = (System.currentTimeMillis() - start);
+//        long endcrawl = (System.currentTimeMillis() - start);
 //        }
-        
+
         info.findLatestPosts(fileQueue);
-        info.findNavigationPages(fileQueue);
+        info.findNavigationPages(fileQueue);        
         Parser parser = new Parser();
-        long startparse = System.currentTimeMillis();
+//        long startparse = System.currentTimeMillis();
 
         parser.parse(fileQueue);
         info.writeInfoFile();
         Server server = new Server();
-//        server.startPreview();
-//        server.openBrowser();
-        long endparse = System.currentTimeMillis();
-        long parsetime = (endparse - startparse);
-        long total = endparse - start;
-        System.out.println("Crawl: " + endcrawl + " Parse: " + parsetime + " Total: " + total);
+        server.startPreview();
+        server.openBrowser();
+//        long endparse = System.currentTimeMillis();
+//        long parsetime = (endparse - startparse);
+//        long total = endparse - start;
+//        System.out.println("Crawl: " + endcrawl + " Parse: " + parsetime + " Total: " + total);
     }
 
 }
