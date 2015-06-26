@@ -18,6 +18,7 @@ package com.pawandubey;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
 import com.github.jknack.handlebars.helper.DefaultHelperRegistry;
 import com.github.jknack.handlebars.helper.StringHelpers;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
@@ -64,7 +65,7 @@ public class Renderer {
                 }
             }
             return null;
-        });
+        }).with(new HighConcurrencyTemplateCache());
         postTemplate = handlebar.compile("post");
         pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");

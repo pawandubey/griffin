@@ -54,6 +54,7 @@ public class Parser {
                 .forceExtentedProfile()
                 .setAllowSpacesInFencedCodeBlockDelimiters(true)
                 .setEncoding("UTF-8")
+                .setCodeBlockEmitter(new CodeBlockEmitter())
                 .build();
     }
 
