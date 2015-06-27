@@ -15,7 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
-import com.pawandubey.Server;
+import com.pawandubey.griffin.Server;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.IntOptionHandler;
 

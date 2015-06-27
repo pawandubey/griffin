@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey;
+package com.pawandubey.griffin;
 
-import static com.pawandubey.DirectoryCrawler.FILESEPARATOR;
-import static com.pawandubey.DirectoryCrawler.ROOTDIR;
+import static com.pawandubey.griffin.DirectoryCrawler.FILESEPARATOR;
+import static com.pawandubey.griffin.DirectoryCrawler.ROOTDIR;
 import java.util.List;
 
 /**

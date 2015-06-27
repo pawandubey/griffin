@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey;
+package com.pawandubey.griffin;
 
 import com.moandjiezana.toml.Toml;
-import static com.pawandubey.Griffin.fileQueue;
+import static com.pawandubey.griffin.Griffin.fileQueue;
 import com.pawandubey.model.Parsable;
 import com.pawandubey.model.Post;
 import java.io.BufferedReader;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey;
+package com.pawandubey.griffin;
 
-import static com.pawandubey.DirectoryCrawler.OUTPUTDIR;
+import static com.pawandubey.griffin.DirectoryCrawler.OUTPUTDIR;
 import static io.undertow.Handlers.resource;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.resource.PathResourceManager;

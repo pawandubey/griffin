@@ -15,10 +15,10 @@
  */
 package com.pawandubey.griffin.cli;
 
-import com.pawandubey.DirectoryCrawler;
-import static com.pawandubey.Griffin.fileQueue;
-import com.pawandubey.InfoHandler;
-import com.pawandubey.Parser;
+import com.pawandubey.griffin.DirectoryCrawler;
+import static com.pawandubey.griffin.Griffin.fileQueue;
+import com.pawandubey.griffin.InfoHandler;
+import com.pawandubey.griffin.Parser;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;

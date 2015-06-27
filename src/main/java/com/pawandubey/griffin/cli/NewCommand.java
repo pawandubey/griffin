@@ -15,7 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
-import com.pawandubey.Initializer;
+import com.pawandubey.griffin.Initializer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;

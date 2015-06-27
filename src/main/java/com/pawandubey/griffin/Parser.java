@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey;
+package com.pawandubey.griffin;
 
 import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
-import static com.pawandubey.DirectoryCrawler.OUTPUTDIR;
-import static com.pawandubey.DirectoryCrawler.SOURCEDIR;
+import static com.pawandubey.griffin.DirectoryCrawler.OUTPUTDIR;
+import static com.pawandubey.griffin.DirectoryCrawler.SOURCEDIR;
 import com.pawandubey.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
