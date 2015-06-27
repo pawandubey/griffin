@@ -15,8 +15,11 @@
  */
 package com.pawandubey.griffin.cli;
 
-import com.pawandubey.griffin.Server;
+import com.pawandubey.griffin.Griffin;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ParserProperties;
+import org.kohsuke.args4j.spi.BooleanOptionHandler;
 import org.kohsuke.args4j.spi.IntOptionHandler;
 
 /**
@@ -24,13 +27,25 @@ import org.kohsuke.args4j.spi.IntOptionHandler;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class PreviewCommand implements GriffinCommand {
-    @Option(name = "-port", handler = IntOptionHandler.class, usage = "Port on which to launch the preview. Default 9090")
+
+    @Option(name = "--port", aliases = {"-p"}, metaVar = "<port_number>", handler = IntOptionHandler.class, usage = "Port on which to launch the preview. Default 9090")
     private Integer port = 9090;
+
+    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
+    private boolean help = false;
 
     @Override
     public void execute() {
-        Server server = new Server(port);
-        server.startPreview();
-        server.openBrowser();
+        Griffin griffin = new Griffin();
+        if (help) {
+            System.out.println("Preview the site on the given port: default: 9090");
+            System.out.println("usage: griffin preview [option]");
+            System.out.println("Options: \n");
+            CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
+            parser.printUsage(System.out);
+        }
+        else {
+            griffin.preview(port);
+        }
     }
 }

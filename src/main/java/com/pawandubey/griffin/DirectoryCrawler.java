@@ -17,8 +17,10 @@ package com.pawandubey.griffin;
 
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.griffin.Griffin.fileQueue;
-import com.pawandubey.model.Parsable;
-import com.pawandubey.model.Post;
+import static com.pawandubey.griffin.Renderer.templateRoot;
+import com.pawandubey.griffin.model.Page;
+import com.pawandubey.griffin.model.Parsable;
+import com.pawandubey.griffin.model.Post;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,12 +29,14 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,13 +47,23 @@ import java.util.logging.Logger;
 public class DirectoryCrawler {
 
     public static final String USERHOME = System.getProperty("user.home");
-    public static final String FILESEPARATOR = System.getProperty("file.separator");
+    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     //TODO remove hardcoded value
-    public static final String ROOTDIR = System.getProperty("user.dir");
-    public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "content";
-    public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
-    public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
-    public static String author = null;//config.siteAuthor;
+    public static String ROOT_DIR = System.getProperty("user.dir");
+    public static final String SOURCE_DIR = ROOT_DIR + FILE_SEPARATOR + "content";
+    public static final String OUTPUT_DIR = ROOT_DIR + FILE_SEPARATOR + "output";
+    public static final String INFO_FILE = ROOT_DIR + FILE_SEPARATOR + ".info";
+    public static final Configurator config = new Configurator();
+    public static String author = config.getSiteAuthor();
+    public final String HEADER_DELIMITER = "#####";
+
+    public DirectoryCrawler() {
+
+    }
+
+    public DirectoryCrawler(String path) {
+        ROOT_DIR = path;
+    }
 
     /**
      * Crawls the whole content directory and adds the files to the main queue
@@ -58,15 +72,19 @@ public class DirectoryCrawler {
      * @param rootPath path to the content directory
      * @throws IOException
      */
-    public void readIntoQueue(Path rootPath) throws IOException {
-
+    protected void readIntoQueue(Path rootPath) throws IOException {
+        long start = System.currentTimeMillis();
         cleanOutputDirectory();
-
+        long enddel = System.currentTimeMillis();
+        copyAssets();
+        long endcop = System.currentTimeMillis();
+        System.out.println("Deletion: " + (enddel - start));
+        System.out.println("Copy: " + (endcop - enddel));
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir)).normalize();
+                Path correspondingOutputPath = Paths.get(OUTPUT_DIR).resolve(rootPath.relativize(dir));
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
@@ -77,7 +95,7 @@ public class DirectoryCrawler {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 try {
-                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file)).normalize();
+                    Path resolvedPath = Paths.get(OUTPUT_DIR).resolve(rootPath.relativize(file));
 
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
                         Parsable parsable = createParsable(file);
@@ -114,12 +132,15 @@ public class DirectoryCrawler {
      * @param rootPath
      * @throws IOException
      */
-    public void fastReadIntoQueue(Path rootPath) throws IOException {
+    protected void fastReadIntoQueue(Path rootPath) throws IOException {
+
+        copyAssets();
+
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir)).normalize();
+                Path correspondingOutputPath = Paths.get(OUTPUT_DIR).resolve(rootPath.relativize(dir));
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
@@ -132,7 +153,7 @@ public class DirectoryCrawler {
                 try {
                     LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
                     LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
-                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file)).normalize();
+                    Path resolvedPath = Paths.get(OUTPUT_DIR).resolve(rootPath.relativize(file));
                     if (fileModified.isAfter(lastParse)) {
                         if (Files.probeContentType(file).equals("text/x-markdown")) {
                             Parsable parsable = createParsable(file);
@@ -167,7 +188,7 @@ public class DirectoryCrawler {
         try (BufferedReader br = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
             StringBuilder header = new StringBuilder();
             String line;
-            while ((line = br.readLine()) != null && !line.equals("#####")) {
+            while ((line = br.readLine()) != null && !line.equals(HEADER_DELIMITER)) {
                 header.append(line).append("\n");
             }
             toml.parse(header.toString());
@@ -175,13 +196,19 @@ public class DirectoryCrawler {
             author = toml.getString("author") != null ? toml.getString("author") : author;
             String date = toml.getString("date");
             String slug = toml.getString("slug");
-            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy MM dd"));
+            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(config.getDateFormat()));
+            String layout = toml.getString("layout");
+            List<String> tag = toml.getList("tags");
             StringBuilder content = new StringBuilder();
             while ((line = br.readLine()) != null) {
                 content.append(line).append("\n");
             }
-
-            return new Post(title, author, publishDate, file, content.toString(), slug);
+            if (layout.equals("post")) {
+                return new Post(title, author, publishDate, file, content.toString(), slug, layout, tag);
+            }
+            else {
+                return new Page(title, author, file, content.toString(), slug, layout, tag);
+            }
         }
         catch (IOException ex) {
             Logger.getLogger(DirectoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
@@ -195,7 +222,7 @@ public class DirectoryCrawler {
      * @throws IOException When a file visit goes wrong
      */
     private void cleanOutputDirectory() throws IOException {
-        Path pathToClean = Paths.get(OUTPUTDIR).normalize();
+        Path pathToClean = Paths.get(OUTPUT_DIR);
         Files.walkFileTree(pathToClean, new FileVisitor<Path>() {
 
             @Override
@@ -224,5 +251,41 @@ public class DirectoryCrawler {
 
         });
 
+    }
+
+    /**
+     * Copies the assets i.e images, CSS, JS etc needed by the theme to the
+     * output directory.
+     *
+     * @throws IOException
+     */
+    private void copyAssets() throws IOException {
+        Path assetsPath = Paths.get(templateRoot, "assets");
+        Path outputAssetsPath = Paths.get(OUTPUT_DIR, "assets");
+        if (Files.notExists(outputAssetsPath)) {
+            Files.createDirectory(outputAssetsPath);
+        }
+        Files.walkFileTree(assetsPath, new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Path correspondingOutputPath = outputAssetsPath.resolve(assetsPath.relativize(dir));
+                if (Files.notExists(correspondingOutputPath)) {
+                    Files.createDirectory(correspondingOutputPath);
+                }
+
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Path resolvedPath = outputAssetsPath.resolve(assetsPath.relativize(file));
+
+                Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
+
+                return FileVisitResult.CONTINUE;
+            }
+
+        });
     }
 }

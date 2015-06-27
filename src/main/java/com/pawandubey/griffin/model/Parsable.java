@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey.model;
+package com.pawandubey.griffin.model;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -24,6 +25,8 @@ import java.time.LocalDate;
  */
 public interface Parsable {
     public String getContent();
+
+    public void setContent(String content);
 
     public String getAuthor();
 
@@ -34,4 +37,10 @@ public interface Parsable {
     public Path getLocation();
 
     public String getSlug();
+
+    public String getLayout();
+
+    public String getPermalink();
+
+    public List<String> getTags();
 }

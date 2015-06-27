@@ -15,7 +15,9 @@
  */
 package com.pawandubey.griffin;
 
-import com.pawandubey.model.Parsable;
+import com.pawandubey.griffin.model.Page;
+import com.pawandubey.griffin.model.Parsable;
+import com.pawandubey.griffin.model.Post;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,10 +45,11 @@ public class InfoHandler {
 
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd HH:mm:ss");
     static String LAST_PARSE_DATE;
-    List<String> latestPosts = new ArrayList<>();
+    protected final static List<Parsable> latestPosts = new ArrayList<>();
+    protected final static List<Parsable> navPages = new ArrayList<>();
 
     public InfoHandler() {
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE).normalize(),
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
                                                          StandardCharsets.UTF_8)) {
             LAST_PARSE_DATE = br.readLine();
         }
@@ -57,14 +60,16 @@ public class InfoHandler {
     }
 
     public void writeInfoFile() {
-        Path infoFilePath = Paths.get(DirectoryCrawler.INFO_FILE).normalize();
+        Path infoFilePath = Paths.get(DirectoryCrawler.INFO_FILE);
         try (BufferedWriter bw
                             = Files.newBufferedWriter(infoFilePath,
                                                       StandardCharsets.UTF_8,
                                                       StandardOpenOption.WRITE,
                                                       StandardOpenOption.TRUNCATE_EXISTING)) {
             bw.write(calculateTimeStamp());
-            bw.write("\n" + String.join("\n", latestPosts));
+            bw.write("\n" + String.join("\n", latestPosts.stream()
+                                        .map(p -> p.getLocation().toString())
+                                        .collect(Collectors.toList())));
         }
         catch (IOException ex) {
             Logger.getLogger(InfoHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -72,15 +77,40 @@ public class InfoHandler {
     }
 
     //TODO refactor number of posts.
+    /**
+     * Finds the N(5) latest posts chronologically to display in the index and
+     * to write their paths in the info file.
+     *
+     * @param collection the queue of Parsables
+     */
     public void findLatestPosts(BlockingQueue<Parsable> collection) {
-        
-        latestPosts
-        = collection.stream().sorted((a, b) -> {
-            return a.getDate().compareTo(b.getDate());
-                }).limit(5).map(p -> p.getLocation().toString()).collect(Collectors.toList());
-        
+        collection.stream()
+                .filter(p -> p instanceof Post)
+                .sorted((a, b) -> {
+                    return b.getDate().compareTo(a.getDate());
+                }).limit(5)
+                .forEach(p -> latestPosts.add(p));
+
     }
 
+    /**
+     * finds all pages tagged as "nav" for addition to the site's navigation.
+     *
+     * @param collection the queue of Parsables
+     */
+    public void findNavigationPages(BlockingQueue<Parsable> collection) {
+        collection.stream()
+                .filter(p -> p instanceof Page)
+                .filter(p -> p.getTags().contains("nav"))
+                .forEach(p -> navPages.add(p));
+    }
+
+    /**
+     * Calculates the current time stamp according to the System's default
+     * timezone and formats it as per the given formatter.
+     *
+     * @return the string representation of the timestamp
+     */
     private String calculateTimeStamp() {
         LocalDateTime parseTime = LocalDateTime.now();
         return parseTime.format(formatter);

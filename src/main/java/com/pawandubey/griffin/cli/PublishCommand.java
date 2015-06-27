@@ -15,15 +15,13 @@
  */
 package com.pawandubey.griffin.cli;
 
-import com.pawandubey.griffin.DirectoryCrawler;
-import static com.pawandubey.griffin.Griffin.fileQueue;
-import com.pawandubey.griffin.InfoHandler;
-import com.pawandubey.griffin.Parser;
+import com.pawandubey.griffin.Griffin;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ParserProperties;
 import org.kohsuke.args4j.spi.BooleanOptionHandler;
 
 /**
@@ -32,7 +30,10 @@ import org.kohsuke.args4j.spi.BooleanOptionHandler;
  */
 public class PublishCommand implements GriffinCommand {
 
-    @Option(name = "-fast", aliases = {"-f"}, handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification"
+    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
+    private boolean help = false;
+
+    @Option(name = "--quick", aliases = {"-q"}, handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification"
     )
     private Boolean fastParse = false;
 
@@ -42,28 +43,19 @@ public class PublishCommand implements GriffinCommand {
 
     @Override
     public void execute() {
-        try {
-            DirectoryCrawler crawler = new DirectoryCrawler();
-            System.out.println(Paths.get(DirectoryCrawler.SOURCEDIR).toAbsolutePath().normalize());
-//        long start = System.currentTimeMillis();
-            InfoHandler info = new InfoHandler();
-            if (fastParse == true) {
-                crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR).normalize());
-            }
-            else {
-                crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR).normalize());
-            }
-//        long endcrawl = (System.currentTimeMillis() - start) / 1000;
-//        }
-
-            info.findLatestPosts(fileQueue);
-            Parser parser = new Parser();
-//        long startparse = System.currentTimeMillis();
-
-            parser.parse(fileQueue);
-            info.writeInfoFile();
+        if (help) {
+            System.out.println("Publish the content in the current Griffin directory.");
+            System.out.println("usage: griffin publish [option]");
+            System.out.println("Options: \n");
+            CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
+            parser.printUsage(System.out);
+            return;
         }
-        catch (InterruptedException | IOException ex) {
+        try {
+            Griffin griffin = new Griffin();
+            griffin.publish(fastParse);
+        }
+        catch (IOException | InterruptedException ex) {
             Logger.getLogger(PublishCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

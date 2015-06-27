@@ -15,7 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
-import com.pawandubey.griffin.Initializer;
+import com.pawandubey.griffin.Griffin;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ParserProperties;
+import org.kohsuke.args4j.spi.BooleanOptionHandler;
 
 /**
  *
@@ -37,25 +39,30 @@ public class NewCommand implements GriffinCommand {
 
     Path filePath;
 
+    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
+    private boolean help = false;
 
-    @Option(name = "-name", aliases = {"-n"}, metaVar = "<folder name>", usage = "name of the directory to be created")
+    @Option(name = "-name", aliases = {"-n"}, metaVar = "<folder_name>", usage = "name of the directory to be created")
     private String name = "griffin";
 
     
     @Override
     public void execute() {
         try {
-            if (args.isEmpty()) {
-                CmdLineParser parser = new CmdLineParser(this);
+
+            if (help || args.isEmpty()) {
+                System.out.println("Scaffold out a new Griffin directory structure.");
+                System.out.println("usage: griffin new [option] <path>");
+                System.out.println("Options: \n");
+                CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
                 parser.printUsage(System.out);
-                //filePath = Paths.get(args.get(0));
+                return;
             }
             else {
                 filePath = Paths.get(args.get(0));
             }
-
-            Initializer init = new Initializer();
-            init.scaffold(filePath, name);
+            Griffin griffin = new Griffin();
+            griffin.initialize(filePath, name);
         }
         catch (IOException ex) {
             Logger.getLogger(NewCommand.class.getName()).log(Level.SEVERE, null, ex);

@@ -15,7 +15,7 @@
  */
 package com.pawandubey.griffin;
 
-import static com.pawandubey.griffin.DirectoryCrawler.OUTPUTDIR;
+import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIR;
 import static io.undertow.Handlers.resource;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.resource.PathResourceManager;
@@ -34,17 +34,17 @@ import java.nio.file.Paths;
 public class Server {
     private Integer port = 9090;
 
-    public Server(Integer p) {
+    protected Server(Integer p) {
         port = p;
     }
     /**
-     * Creates and starts the server to serve the contents of OUTPUTDIR on port
-     * 9090.
+     * Creates and starts the server to serve the contents of OUTPUT_DIR on port
+ 9090.
      */
-    public void startPreview() {
+    protected void startPreview() {
         Undertow server = Undertow.builder()
                 .addHttpListener(port, "localhost")
-                .setHandler(resource(new PathResourceManager(Paths.get(OUTPUTDIR), 100, true))
+                .setHandler(resource(new PathResourceManager(Paths.get(OUTPUT_DIR), 100, true))
                         .setDirectoryListingEnabled(false))
                 .build();
         server.start();
@@ -54,7 +54,7 @@ public class Server {
      * Opens the system's default browser and tries to navigate to the URL at
      * which the server is operational.
      */
-    public void openBrowser() {
+    protected void openBrowser() {
         String url = "http://localhost:" + port;
 
         if (Desktop.isDesktopSupported()) {

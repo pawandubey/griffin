@@ -1,4 +1,4 @@
-/*
+/*x
  * Copyright 2015 Pawan Dubey pawandubey@outlook.com.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,9 +21,16 @@ package com.pawandubey.griffin;
  */
 public enum ConfigurationKeys {
 
-    SITE_NAME("siteName"), SITE_AUTHOR("siteAuthor"), SITE_BASE_URL("siteBaseUrl"),
-    SITE_TAGLINE("siteTagline"), SOURCE_DIR("source"), OUTPUT_DIR("output"),
-    EXCLUDE("exclude"), DATE_FORMAT("dateFormat");
+    SITE_NAME("sitename"),
+    SITE_AUTHOR("siteauthor"),
+    SITE_BASE_URL("sitebaseurl"),
+    SITE_TAGLINE("sitetagline"),
+    SOURCE_DIR("source"),
+    OUTPUT_DIR("output"),
+    EXCLUDE("exclude"),
+    DATE_FORMAT("dateformat"),
+    THEME("theme"),
+    PORT("port");
 
     public final String key;
 

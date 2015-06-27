@@ -15,8 +15,20 @@
  */
 package com.pawandubey.griffin;
 
-import static com.pawandubey.griffin.DirectoryCrawler.FILESEPARATOR;
-import static com.pawandubey.griffin.DirectoryCrawler.ROOTDIR;
+import com.moandjiezana.toml.Toml;
+import static com.pawandubey.griffin.ConfigurationKeys.DATE_FORMAT;
+import static com.pawandubey.griffin.ConfigurationKeys.EXCLUDE;
+import static com.pawandubey.griffin.ConfigurationKeys.OUTPUT_DIR;
+import static com.pawandubey.griffin.ConfigurationKeys.PORT;
+import static com.pawandubey.griffin.ConfigurationKeys.SITE_AUTHOR;
+import static com.pawandubey.griffin.ConfigurationKeys.SITE_BASE_URL;
+import static com.pawandubey.griffin.ConfigurationKeys.SITE_NAME;
+import static com.pawandubey.griffin.ConfigurationKeys.SITE_TAGLINE;
+import static com.pawandubey.griffin.ConfigurationKeys.SOURCE_DIR;
+import static com.pawandubey.griffin.ConfigurationKeys.THEME;
+import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
+import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIR;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -26,27 +38,101 @@ import java.util.List;
  */
 public class Configurator {
 
-    public static final String CONFIG_FILE = ROOTDIR + FILESEPARATOR + "config.toml";
-    public String siteName = "Your Own Griffin";
-    public String siteTagline = "Not just another site";
-    public String siteAuthor = "Admin";
-    public String siteBaseUrl = ".";
-    public String sourceDir = ROOTDIR + FILESEPARATOR + "content";
-    public String outputDir = ROOTDIR + FILESEPARATOR + "output";
-    public List<String> excludeDirs;
-    public String dateFormat = InfoHandler.formatter.toString();
+    private static final String CONFIG_FILE = ROOT_DIR + FILE_SEPARATOR + "config.toml";
+
+    private String siteName = "Your Own Griffin";
+    private String siteTagline = "Not just another site";
+    private String siteAuthor = "Admin";
+    private String siteBaseUrl = ".";
+    private String sourceDir = ROOT_DIR + FILE_SEPARATOR + "content";
+    private String outputDir = ROOT_DIR + FILE_SEPARATOR + "output";
+    private List<String> excludeDirs;
+    private String dateFormat = InfoHandler.formatter.toString();
+    private String theme = ROOT_DIR + FILE_SEPARATOR + "assets" + FILE_SEPARATOR + "templates/Wells/";
+    private Integer port = 9090;
 
     public Configurator() {
-//        Toml toml = new Toml();
-//        toml.parse(new File(CONFIG_FILE));
-//        siteName = toml.getString(SITE_NAME.key);
-//        siteTagline = toml.getString(SITE_TAGLINE.key);
-//        siteAuthor = toml.getString(SITE_AUTHOR.key);
-//        siteBaseUrl = toml.getString(SITE_BASE_URL.key);
-//        sourceDir = toml.getString(SOURCE_DIR.key);
-//        outputDir = toml.getString(OUTPUT_DIR.key);
-//        excludeDirs = toml.getList(EXCLUDE.key);
-//        dateFormat = toml.getString(DATE_FORMAT.key);
+        Toml toml = new Toml();
+        toml.parse(new File(CONFIG_FILE));
+        siteName = toml.getString(SITE_NAME.key);
+        siteTagline = toml.getString(SITE_TAGLINE.key);
+        siteAuthor = toml.getString(SITE_AUTHOR.key);
+        siteBaseUrl = toml.getString(SITE_BASE_URL.key);
+        sourceDir = toml.getString(SOURCE_DIR.key);
+        outputDir = toml.getString(OUTPUT_DIR.key);
+        excludeDirs = toml.getList(EXCLUDE.key);
+        dateFormat = toml.getString(DATE_FORMAT.key);
+        theme = toml.getString(THEME.key);
+        port = Integer.valueOf(toml.getLong(PORT.key).toString());
     }
 
+    /**
+     * @return the siteName
+     */
+    public String getSiteName() {
+        return siteName;
+    }
+
+    /**
+     * @return the siteTagline
+     */
+    public String getSiteTagline() {
+        return siteTagline;
+    }
+
+    /**
+     * @return the siteAuthor
+     */
+    public String getSiteAuthor() {
+        return siteAuthor;
+    }
+
+    /**
+     * @return the siteBaseUrl
+     */
+    public String getSiteBaseUrl() {
+        return siteBaseUrl;
+    }
+
+    /**
+     * @return the sourceDir
+     */
+    public String getSourceDir() {
+        return sourceDir;
+    }
+
+    /**
+     * @return the outputDir
+     */
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    /**
+     * @return the excludeDirs
+     */
+    public List<String> getExcludeDirs() {
+        return excludeDirs;
+    }
+
+    /**
+     * @return the dateFormat
+     */
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    /**
+     * @return the theme
+     */
+    public String getTheme() {
+        return theme;
+    }
+
+    /**
+     * @return the port
+     */
+    public Integer getPort() {
+        return port;
+    }
 }

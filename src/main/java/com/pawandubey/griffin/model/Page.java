@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey.model;
+package com.pawandubey.griffin.model;
 
+import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIR;
+import static com.pawandubey.griffin.DirectoryCrawler.config;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  *
@@ -27,14 +31,20 @@ public class Page implements Parsable {
     private final String title;
     private final String author;
     private final Path location;
-    private final String content;
+    private String content;
     private final String slug;
-    public Page(String titl, String auth, Path loc, String cont, String slu) {
+    private final String layout;
+    private String permalink;
+    private final List<String> tags;
+
+    public Page(String titl, String auth, Path loc, String cont, String slu, String lay, List<String> tag) {
         author = auth;
         title = titl;
         location = loc;
         content = cont;
         slug = slu;
+        layout = lay;
+        tags = tag;
     }
 
     /**
@@ -85,6 +95,28 @@ public class Page implements Parsable {
     @Override
     public LocalDate getDate() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getLayout() {
+        return layout;
+    }
+
+    @Override
+    public String getPermalink() {
+        Path parentDir = Paths.get(SOURCE_DIR).relativize(location.getParent());
+        permalink = config.getSiteBaseUrl().concat("/").concat(parentDir.resolve(getSlug()).toString()).concat("/");
+        return permalink;
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public List<String> getTags() {
+        return tags;
     }
 
 }

@@ -17,9 +17,9 @@ package com.pawandubey.griffin;
 
 import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
-import static com.pawandubey.griffin.DirectoryCrawler.OUTPUTDIR;
-import static com.pawandubey.griffin.DirectoryCrawler.SOURCEDIR;
-import com.pawandubey.model.Parsable;
+import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIR;
+import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIR;
+import com.pawandubey.griffin.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -38,17 +38,23 @@ import java.util.logging.Logger;
 public class Parser {
 
     private final Configuration config;
+    private final Renderer renderer;
+    private String parsedContent;
 
     /**
      * creates a parser with configuration set to enable safe mode HTML with
      * extended profile from txtmark, allowing spaces in fenced code blocks and
      * encoding set to UTF-8.
+     *
+     * @throws java.io.IOException
      */
-    public Parser() {
+    public Parser() throws IOException {
+        renderer = new Renderer();
         config = Configuration.builder().enableSafeMode()
                 .forceExtentedProfile()
                 .setAllowSpacesInFencedCodeBlockDelimiters(true)
                 .setEncoding("UTF-8")
+                .setCodeBlockEmitter(new CodeBlockEmitter())
                 .build();
     }
 
@@ -57,14 +63,23 @@ public class Parser {
      *
      * @param collection the queue of files to be parsed
      * @throws InterruptedException
+     * @throws java.io.IOException
      */
-    public void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
+    protected void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
         Parsable p;
         String content;
         while (!collection.isEmpty()) {
             p = collection.take();
-            writeParsedFile(p, p.getContent());
+            writeParsedFile(p);
             //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
+        }
+        if (Files.notExists(Paths.get(OUTPUT_DIR).resolve("index.html"))) {
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIR).resolve("index.html"), StandardCharsets.UTF_8)) {
+                bw.write(renderer.renderIndex());
+            }
+            catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -89,25 +104,26 @@ public class Parser {
     }
 
     /**
-     * Writes the given string content to the path resolved from the given path
-     * by creating a directory from the given slug and then writing the contents
+     * Writes the content of the Parsable to the path resolved from the slug by
+     * creating a directory from the given slug and then writing the contents
      * into the index.html file inside it for pretty links.
      *
-     * @param p the path to the file
-     * @param content the content to be written
+     * @param p the Parsable instance
      */
-    private void writeParsedFile(Parsable p, String content) throws IOException {
+    private void writeParsedFile(Parsable p) throws IOException {
         String name = p.getSlug();
-        Path parsedDirParent = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent())).toAbsolutePath().normalize();
+        Path parsedDirParent = Paths.get(OUTPUT_DIR).resolve(Paths.get(SOURCE_DIR).relativize(p.getLocation().getParent()));
         Path parsedDir = parsedDirParent.resolve(name);
-        
+
         if (Files.notExists(parsedDir)) {
             Files.createDirectory(parsedDir);
         }
         Path htmlPath = parsedDir.resolve("index.html");
 
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
-            bw.write(Processor.process(content, config));
+            parsedContent = Processor.process(p.getContent(), config);
+            p.setContent(parsedContent);
+            bw.write(renderer.renderParsable(p));
         }
         catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
