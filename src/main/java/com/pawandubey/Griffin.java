@@ -15,10 +15,22 @@
  */
 package com.pawandubey;
 
+import com.pawandubey.griffin.cli.GriffinCommand;
+import com.pawandubey.griffin.cli.NewCommand;
+import com.pawandubey.griffin.cli.PreviewCommand;
+import com.pawandubey.griffin.cli.PublishCommand;
 import com.pawandubey.model.Parsable;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.ParserProperties;
+import org.kohsuke.args4j.spi.SubCommand;
+import org.kohsuke.args4j.spi.SubCommandHandler;
+import org.kohsuke.args4j.spi.SubCommands;
 
 /**
  *
@@ -27,6 +39,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Griffin {
     public final static LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
     //public final static Configurator config = new Configurator();
+    @Argument(usage = "Pass commands", metaVar = "<commands>", handler = SubCommandHandler.class)
+    @SubCommands({
+        @SubCommand(name = "new", impl = NewCommand.class),
+        @SubCommand(name = "publish", impl = PublishCommand.class),
+        @SubCommand(name = "preview", impl = PreviewCommand.class)
+    })
+    public GriffinCommand commands;
+
     /**
      *
      */
@@ -39,26 +59,20 @@ public class Griffin {
      * @throws java.lang.InterruptedException
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        DirectoryCrawler crawler = new DirectoryCrawler();
-//        long start = System.currentTimeMillis();
-        InfoHandler info = new InfoHandler();
-        crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
-//        long endcrawl = (System.currentTimeMillis() - start) / 1000;
-//        }
-
-        info.findLatestPosts(fileQueue);
-        Parser parser = new Parser();
-//        long startparse = System.currentTimeMillis();
-
-        parser.parse(fileQueue);
-        info.writeInfoFile();
-        Server server = new Server();
-        server.startPreview();
-        server.openBrowser();
-//        long endparse = System.currentTimeMillis();
-//        long parsetime = (endparse - startparse) / 1000;
-//        long total = endparse - start;
-//        System.out.println("Crawl: " + endcrawl + " Parse: " + parsetime + " Total: " + total / 1000);        
+        try {
+            Griffin griffin = new Griffin();
+            //     System.out.println(Arrays.asList(args));
+            CmdLineParser parser = new CmdLineParser(griffin, ParserProperties.defaults().withUsageWidth(120));
+            parser.parseArgument(args);
+            //       System.out.println(griffin.commands);
+            if (args.length == 0) {
+                parser.printUsage(System.out);
+            }
+            griffin.commands.execute();
+        }
+        catch (CmdLineException ex) {
+            Logger.getLogger(Griffin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

@@ -72,7 +72,7 @@ public class InfoHandler {
     }
 
     //TODO refactor number of posts.
-    protected void findLatestPosts(BlockingQueue<Parsable> collection) {
+    public void findLatestPosts(BlockingQueue<Parsable> collection) {
         
         latestPosts
         = collection.stream().sorted((a, b) -> {

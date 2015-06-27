@@ -26,7 +26,14 @@ import org.zeroturnaround.zip.ZipUtil;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Initializer {
-    private final String zipp = Paths.get(ClassLoader.getSystemClassLoader().getResource(".").getPath()).getParent().toString();
+
+    private final String zipp;// = Paths.get(ClassLoader.getSystemClassLoader().getResource(".").getPath()).getParent().toString();
+
+    public Initializer() {
+        Path jarRootPath = Paths.get(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
+        zipp = jarRootPath.toAbsolutePath().toString();        
+    }
+
     /**
      * Scaffolds out a new directory with the predefined Griffin directory
      * structure.

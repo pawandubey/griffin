@@ -45,8 +45,8 @@ public class DirectoryCrawler {
     public static final String USERHOME = System.getProperty("user.home");
     public static final String FILESEPARATOR = System.getProperty("file.separator");
     //TODO remove hardcoded value
-    public static final String ROOTDIR = USERHOME + FILESEPARATOR + "Desktop/gtest";
-    public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "src";
+    public static final String ROOTDIR = ".";//USERHOME + FILESEPARATOR + "Desktop/gtest";
+    public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "content";
     public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
     public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
     public static String author = null;//config.siteAuthor;
@@ -58,7 +58,7 @@ public class DirectoryCrawler {
      * @param rootPath path to the content directory
      * @throws IOException
      */
-    protected void readIntoQueue(Path rootPath) throws IOException {
+    public void readIntoQueue(Path rootPath) throws IOException {
 
         cleanOutputDirectory();
 
