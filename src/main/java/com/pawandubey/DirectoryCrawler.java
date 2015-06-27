@@ -45,7 +45,7 @@ public class DirectoryCrawler {
     public static final String USERHOME = System.getProperty("user.home");
     public static final String FILESEPARATOR = System.getProperty("file.separator");
     //TODO remove hardcoded value
-    public static final String ROOTDIR = ".";//USERHOME + FILESEPARATOR + "Desktop/gtest";
+    public static final String ROOTDIR = System.getProperty("user.dir");
     public static final String SOURCEDIR = ROOTDIR + FILESEPARATOR + "content";
     public static final String OUTPUTDIR = ROOTDIR + FILESEPARATOR + "output";
     public static final String INFO_FILE = ROOTDIR + FILESEPARATOR + ".info";
@@ -66,7 +66,7 @@ public class DirectoryCrawler {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir));
+                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir)).normalize();
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
@@ -77,7 +77,7 @@ public class DirectoryCrawler {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 try {
-                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file));
+                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file)).normalize();
 
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
                         Parsable parsable = createParsable(file);
@@ -114,12 +114,12 @@ public class DirectoryCrawler {
      * @param rootPath
      * @throws IOException
      */
-    protected void fastReadIntoQueue(Path rootPath) throws IOException {
+    public void fastReadIntoQueue(Path rootPath) throws IOException {
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir));
+                Path correspondingOutputPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(dir)).normalize();
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
@@ -132,7 +132,7 @@ public class DirectoryCrawler {
                 try {
                     LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
                     LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
-                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file));
+                    Path resolvedPath = Paths.get(OUTPUTDIR).resolve(rootPath.relativize(file)).normalize();
                     if (fileModified.isAfter(lastParse)) {
                         if (Files.probeContentType(file).equals("text/x-markdown")) {
                             Parsable parsable = createParsable(file);
@@ -195,7 +195,7 @@ public class DirectoryCrawler {
      * @throws IOException When a file visit goes wrong
      */
     private void cleanOutputDirectory() throws IOException {
-        Path pathToClean = Paths.get(OUTPUTDIR);
+        Path pathToClean = Paths.get(OUTPUTDIR).normalize();
         Files.walkFileTree(pathToClean, new FileVisitor<Path>() {
 
             @Override

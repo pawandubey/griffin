@@ -21,6 +21,8 @@ import com.pawandubey.InfoHandler;
 import com.pawandubey.Parser;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.spi.BooleanOptionHandler;
 
@@ -28,23 +30,41 @@ import org.kohsuke.args4j.spi.BooleanOptionHandler;
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class PublishCommand {
-    @Option(name = "-fast", handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification")
+public class PublishCommand implements GriffinCommand {
+
+    @Option(name = "-fast", aliases = {"-f"}, handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification"
+    )
     private Boolean fastParse = false;
 
     public PublishCommand() throws InterruptedException, IOException {
-        DirectoryCrawler crawler = new DirectoryCrawler();
+
+    }
+
+    @Override
+    public void execute() {
+        try {
+            DirectoryCrawler crawler = new DirectoryCrawler();
+            System.out.println(Paths.get(DirectoryCrawler.SOURCEDIR).toAbsolutePath().normalize());
 //        long start = System.currentTimeMillis();
-        InfoHandler info = new InfoHandler();
-        crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR));
+            InfoHandler info = new InfoHandler();
+            if (fastParse == true) {
+                crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR).normalize());
+            }
+            else {
+                crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCEDIR).normalize());
+            }
 //        long endcrawl = (System.currentTimeMillis() - start) / 1000;
 //        }
 
-        info.findLatestPosts(fileQueue);
-        Parser parser = new Parser();
+            info.findLatestPosts(fileQueue);
+            Parser parser = new Parser();
 //        long startparse = System.currentTimeMillis();
 
-        parser.parse(fileQueue);
-        info.writeInfoFile();
+            parser.parse(fileQueue);
+            info.writeInfoFile();
+        }
+        catch (InterruptedException | IOException ex) {
+            Logger.getLogger(PublishCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

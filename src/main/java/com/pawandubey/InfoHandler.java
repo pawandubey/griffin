@@ -46,7 +46,7 @@ public class InfoHandler {
     List<String> latestPosts = new ArrayList<>();
 
     public InfoHandler() {
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE).normalize(),
                                                          StandardCharsets.UTF_8)) {
             LAST_PARSE_DATE = br.readLine();
         }
@@ -57,7 +57,7 @@ public class InfoHandler {
     }
 
     public void writeInfoFile() {
-        Path infoFilePath = Paths.get(DirectoryCrawler.INFO_FILE);
+        Path infoFilePath = Paths.get(DirectoryCrawler.INFO_FILE).normalize();
         try (BufferedWriter bw
                             = Files.newBufferedWriter(infoFilePath,
                                                       StandardCharsets.UTF_8,

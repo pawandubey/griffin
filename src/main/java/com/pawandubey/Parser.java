@@ -98,7 +98,7 @@ public class Parser {
      */
     private void writeParsedFile(Parsable p, String content) throws IOException {
         String name = p.getSlug();
-        Path parsedDirParent = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent()));
+        Path parsedDirParent = Paths.get(OUTPUTDIR).resolve(Paths.get(SOURCEDIR).relativize(p.getLocation().getParent())).toAbsolutePath().normalize();
         Path parsedDir = parsedDirParent.resolve(name);
         
         if (Files.notExists(parsedDir)) {

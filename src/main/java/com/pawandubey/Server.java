@@ -32,13 +32,16 @@ import java.nio.file.Paths;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Server {
-    private final Integer port = 9090;
+    private Integer port = 9090;
 
+    public Server(Integer p) {
+        port = p;
+    }
     /**
      * Creates and starts the server to serve the contents of OUTPUTDIR on port
      * 9090.
      */
-    protected void startPreview() {
+    public void startPreview() {
         Undertow server = Undertow.builder()
                 .addHttpListener(port, "localhost")
                 .setHandler(resource(new PathResourceManager(Paths.get(OUTPUTDIR), 100, true))
@@ -51,7 +54,7 @@ public class Server {
      * Opens the system's default browser and tries to navigate to the URL at
      * which the server is operational.
      */
-    protected void openBrowser() {
+    public void openBrowser() {
         String url = "http://localhost:" + port;
 
         if (Desktop.isDesktopSupported()) {

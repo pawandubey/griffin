@@ -23,11 +23,12 @@ import org.kohsuke.args4j.spi.IntOptionHandler;
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class PreviewCommand {
+public class PreviewCommand implements GriffinCommand {
     @Option(name = "-port", handler = IntOptionHandler.class, usage = "Port on which to launch the preview. Default 9090")
     private Integer port = 9090;
 
-    public PreviewCommand() {
+    @Override
+    public void execute() {
         Server server = new Server(port);
         server.startPreview();
         server.openBrowser();
