@@ -41,7 +41,7 @@ public class Initializer {
      * @param rootPath the path at which the scaffolding has to take place
      * @param name the name to be given to the new directory
      * @return the path to the newly created directory
-     * @throws java.io.IOException
+     * @throws java.io.IOException the exception
      */
     public Path scaffold(Path rootPath, String name) throws IOException {
         unzipStructure(rootPath.resolve(name));

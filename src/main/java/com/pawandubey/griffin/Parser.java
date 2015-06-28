@@ -46,7 +46,7 @@ public class Parser {
      * extended profile from txtmark, allowing spaces in fenced code blocks and
      * encoding set to UTF-8.
      *
-     * @throws java.io.IOException
+     * @throws java.io.IOException the exception
      */
     public Parser() throws IOException {
         renderer = new Renderer();
@@ -62,8 +62,8 @@ public class Parser {
      * Parses the collection of files in the queue to produce HTML output
      *
      * @param collection the queue of files to be parsed
-     * @throws InterruptedException
-     * @throws java.io.IOException
+     * @throws InterruptedException the exception
+     * @throws java.io.IOException the exception
      */
     protected void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
         Parsable p;

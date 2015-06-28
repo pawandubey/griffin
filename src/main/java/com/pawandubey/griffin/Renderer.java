@@ -45,7 +45,7 @@ public class Renderer {
     /**
      * Creates a new Renderer instance and compiles the templates
      *
-     * @throws IOException
+     * @throws IOException the exception
      */
     public Renderer() throws IOException {
         postTemplate = handlebar.compile("post");
@@ -59,7 +59,7 @@ public class Renderer {
      *
      * @param parsable the Parsable to be rendered.
      * @return the String representation of the rendering.
-     * @throws IOException
+     * @throws IOException the exception
      */
     protected String renderParsable(Parsable parsable) throws IOException {
         Map<String, Object> map = new HashMap<>();
@@ -78,7 +78,7 @@ public class Renderer {
      * Renders the index page for the site.
      *
      * @return the String representation of the rendering.
-     * @throws IOException
+     * @throws IOException the exception
      */
     protected String renderIndex() throws IOException {
         Map<String, Object> map = new HashMap<>();

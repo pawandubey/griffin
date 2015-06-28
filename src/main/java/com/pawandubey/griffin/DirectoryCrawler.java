@@ -53,7 +53,7 @@ public class DirectoryCrawler {
     public static final String SOURCE_DIR = ROOT_DIR + FILE_SEPARATOR + "content";
     public static final String OUTPUT_DIR = ROOT_DIR + FILE_SEPARATOR + "output";
     public static final String INFO_FILE = ROOT_DIR + FILE_SEPARATOR + ".info";
-    public static final Configurator config = new Configurator();
+    public static Configurator config = new Configurator();
     public static String author = config.getSiteAuthor();
     public final String HEADER_DELIMITER = "#####";
 
@@ -76,7 +76,7 @@ public class DirectoryCrawler {
      * for parsing.
      *
      * @param rootPath path to the content directory
-     * @throws IOException
+     * @throws IOException the exception
      */
     protected void readIntoQueue(Path rootPath) throws IOException {
         long start = System.currentTimeMillis();
@@ -136,7 +136,7 @@ public class DirectoryCrawler {
      * then adds the file into the queue for parsing, hence saving time.
      *
      * @param rootPath
-     * @throws IOException
+     * @throws IOException the exception
      */
     protected void fastReadIntoQueue(Path rootPath) throws IOException {
 
@@ -270,7 +270,7 @@ public class DirectoryCrawler {
      * Copies the assets i.e images, CSS, JS etc needed by the theme to the
      * output directory.
      *
-     * @throws IOException
+     * @throws IOException the exception
      */
     private void copyAssets() throws IOException {
         Path assetsPath = Paths.get(templateRoot, "assets");

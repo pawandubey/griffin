@@ -83,7 +83,7 @@ public class Griffin {
      *
      * @param path The path at which to scaffold.
      * @param name The name to give to the directory
-     * @throws IOException
+     * @throws IOException the exception
      */
     public void initialize(Path path, String name) throws IOException {
         Initializer init = new Initializer();
@@ -97,8 +97,8 @@ public class Griffin {
      * true.
      *
      * @param fastParse Do a fast incremental parse
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException the exception
+     * @throws InterruptedException the exception
      */
     public void publish(boolean fastParse) throws IOException, InterruptedException {
         InfoHandler info = new InfoHandler();
@@ -154,8 +154,8 @@ public class Griffin {
 
     /**
      * @param args the command line arguments
-     * @throws java.io.IOException
-     * @throws java.lang.InterruptedException
+     * @throws java.io.IOException the exception
+     * @throws java.lang.InterruptedException the exception
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         try {

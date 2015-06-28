@@ -21,7 +21,8 @@ import java.util.List;
 /**
  * Defines a custom CodeBlockEmitter which adds the language name specified with
  * the fenced code blocks in markdown to the
- * <pre><code></pre> tag as the class.
+ * {@code <pre><code></code></pre>}
+ * tag as the class.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */

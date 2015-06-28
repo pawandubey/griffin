@@ -29,6 +29,8 @@ import static com.pawandubey.griffin.ConfigurationKeys.THEME;
 import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
 import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIR;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -52,18 +54,20 @@ public class Configurator {
     private Integer port = 9090;
 
     public Configurator() {
-        Toml toml = new Toml();
-        toml.parse(new File(CONFIG_FILE));
-        siteName = toml.getString(SITE_NAME.key);
-        siteTagline = toml.getString(SITE_TAGLINE.key);
-        siteAuthor = toml.getString(SITE_AUTHOR.key);
-        siteBaseUrl = toml.getString(SITE_BASE_URL.key);
-        sourceDir = toml.getString(SOURCE_DIR.key);
-        outputDir = toml.getString(OUTPUT_DIR.key);
-        excludeDirs = toml.getList(EXCLUDE.key);
-        dateFormat = toml.getString(DATE_FORMAT.key);
-        theme = toml.getString(THEME.key);
-        port = Integer.valueOf(toml.getLong(PORT.key).toString());
+        if (Files.exists(Paths.get(CONFIG_FILE))) {
+            Toml toml = new Toml();
+            toml.parse(new File(CONFIG_FILE));
+            siteName = toml.getString(SITE_NAME.key);
+            siteTagline = toml.getString(SITE_TAGLINE.key);
+            siteAuthor = toml.getString(SITE_AUTHOR.key);
+            siteBaseUrl = toml.getString(SITE_BASE_URL.key);
+            sourceDir = toml.getString(SOURCE_DIR.key);
+            outputDir = toml.getString(OUTPUT_DIR.key);
+            excludeDirs = toml.getList(EXCLUDE.key);
+            dateFormat = toml.getString(DATE_FORMAT.key);
+            theme = toml.getString(THEME.key);
+            port = Integer.valueOf(toml.getLong(PORT.key).toString());
+        }
     }
 
     /**
