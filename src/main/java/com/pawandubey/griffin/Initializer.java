@@ -44,6 +44,7 @@ public class Initializer {
      * @throws java.io.IOException the exception
      */
     public Path scaffold(Path rootPath, String name) throws IOException {
+        //DirectoryCrawler.ROOT_DIRECTORY = rootPath.resolve(name).toAbsolutePath().normalize().toString();
         unzipStructure(rootPath.resolve(name));
         return rootPath.resolve(name);
     }

@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
+import static com.pawandubey.griffin.DirectoryCrawler.config;
 import com.pawandubey.griffin.Griffin;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -28,8 +29,8 @@ import org.kohsuke.args4j.spi.IntOptionHandler;
  */
 public class PreviewCommand implements GriffinCommand {
 
-    @Option(name = "--port", aliases = {"-p"}, metaVar = "<port_number>", handler = IntOptionHandler.class, usage = "Port on which to launch the preview. Default 9090")
-    private Integer port = 9090;
+    @Option(name = "--port", aliases = {"-p"}, metaVar = "<port_number>", handler = IntOptionHandler.class, usage = "Port on which to launch the preview. Default to your configured port.")
+    private Integer port = config.getPort();
 
     @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
     private boolean help = false;

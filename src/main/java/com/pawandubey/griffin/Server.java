@@ -15,7 +15,7 @@
  */
 package com.pawandubey.griffin;
 
-import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIR;
+import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIRECTORY;
 import static io.undertow.Handlers.resource;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.resource.PathResourceManager;
@@ -38,13 +38,13 @@ public class Server {
         port = p;
     }
     /**
-     * Creates and starts the server to serve the contents of OUTPUT_DIR on port
+     * Creates and starts the server to serve the contents of OUTPUT_DIRECTORY on port
  9090.
      */
     protected void startPreview() {
         Undertow server = Undertow.builder()
                 .addHttpListener(port, "localhost")
-                .setHandler(resource(new PathResourceManager(Paths.get(OUTPUT_DIR), 100, true))
+                .setHandler(resource(new PathResourceManager(Paths.get(OUTPUT_DIRECTORY), 100, true))
                         .setDirectoryListingEnabled(false))
                 .build();
         server.start();

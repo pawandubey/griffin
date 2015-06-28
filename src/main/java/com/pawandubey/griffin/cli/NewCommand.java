@@ -63,8 +63,9 @@ public class NewCommand implements GriffinCommand {
             else {
                 filePath = Paths.get(args.get(0));
             }
-            Griffin griffin = new Griffin();
+            Griffin griffin = new Griffin(filePath.resolve(name));
             griffin.initialize(filePath, name);
+            System.out.println("Successfully created new site.");
         }
         catch (IOException ex) {
             Logger.getLogger(NewCommand.class.getName()).log(Level.SEVERE, null, ex);

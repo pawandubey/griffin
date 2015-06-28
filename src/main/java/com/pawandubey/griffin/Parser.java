@@ -17,8 +17,8 @@ package com.pawandubey.griffin;
 
 import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
-import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIR;
-import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIR;
+import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIRECTORY;
+import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
 import com.pawandubey.griffin.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -73,8 +73,8 @@ public class Parser {
             writeParsedFile(p);
             //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
         }
-        if (Files.notExists(Paths.get(OUTPUT_DIR).resolve("index.html"))) {
-            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIR).resolve("index.html"), StandardCharsets.UTF_8)) {
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"))) {
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderIndex());
             }
             catch (IOException ex) {
@@ -112,7 +112,7 @@ public class Parser {
      */
     private void writeParsedFile(Parsable p) throws IOException {
         String name = p.getSlug();
-        Path parsedDirParent = Paths.get(OUTPUT_DIR).resolve(Paths.get(SOURCE_DIR).relativize(p.getLocation().getParent()));
+        Path parsedDirParent = Paths.get(OUTPUT_DIRECTORY).resolve(Paths.get(SOURCE_DIRECTORY).relativize(p.getLocation().getParent()));
         Path parsedDir = parsedDirParent.resolve(name);
 
         if (Files.notExists(parsedDir)) {

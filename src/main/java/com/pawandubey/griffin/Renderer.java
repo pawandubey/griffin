@@ -21,7 +21,7 @@ import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
-import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIR;
+import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIRECTORY;
 import static com.pawandubey.griffin.DirectoryCrawler.config;
 import com.pawandubey.griffin.model.Parsable;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import java.util.Map;
 public class Renderer {
     public final static String ASSETS_FOLDER_NAME = "assets";
     public final static String TEMPLATES_FOLDER_NAME = "templates";
-    public final static String templateRoot = ROOT_DIR + FILE_SEPARATOR + ASSETS_FOLDER_NAME + FILE_SEPARATOR + TEMPLATES_FOLDER_NAME + FILE_SEPARATOR + config.getTheme();
+    public final static String templateRoot = ROOT_DIRECTORY + FILE_SEPARATOR + ASSETS_FOLDER_NAME + FILE_SEPARATOR + TEMPLATES_FOLDER_NAME + FILE_SEPARATOR + config.getTheme();
     private final TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
     private final Handlebars handlebar = new Handlebars(loader).with(new HighConcurrencyTemplateCache());
     private final Template postTemplate;
