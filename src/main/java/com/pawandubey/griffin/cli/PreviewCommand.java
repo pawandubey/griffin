@@ -34,6 +34,9 @@ public class PreviewCommand implements GriffinCommand {
     @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
     private boolean help = false;
 
+    /**
+     * Executes the command
+     */
     @Override
     public void execute() {
         Griffin griffin = new Griffin();

@@ -19,11 +19,22 @@ import com.github.rjeschke.txtmark.BlockEmitter;
 import java.util.List;
 
 /**
+ * Defines a custom CodeBlockEmitter which adds the language name specified with
+ * the fenced code blocks in markdown to the
+ * <pre><code></pre> tag as the class.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class CodeBlockEmitter implements BlockEmitter {
 
+    /**
+     * Emits the code blocks properly modified with the class=language appended
+     * to the code tag.
+     *
+     * @param out the modified code block.
+     * @param list the list of Strings to modify.
+     * @param meta the name of the language.
+     */
     @Override
     public void emitBlock(StringBuilder out, List<String> list, String meta) {
         out.append("<pre><code class= \"").append(meta).append("\">");

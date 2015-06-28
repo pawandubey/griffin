@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
+ * Defines an interface to be implemented by all content types which need to be
+ * parsed by the Parser.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */

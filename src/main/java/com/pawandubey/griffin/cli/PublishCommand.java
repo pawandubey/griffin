@@ -41,6 +41,9 @@ public class PublishCommand implements GriffinCommand {
 
     }
 
+    /**
+     * Executes the command
+     */
     @Override
     public void execute() {
         if (help) {

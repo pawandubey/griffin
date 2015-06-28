@@ -61,6 +61,12 @@ public class DirectoryCrawler {
 
     }
 
+    /**
+     * Creates a new DirectoryCrawler with the root path of the site directory
+     * set to path.
+     *
+     * @param path the path to the root of the site's directory.
+     */
     public DirectoryCrawler(String path) {
         ROOT_DIR = path;
     }
@@ -183,6 +189,13 @@ public class DirectoryCrawler {
         });
     }
 
+    /**
+     * Creates an appropriate instance of a Parsable implementation depending
+     * upon the header of the file.
+     *
+     * @param file the path of the file from which to create a Parsable.
+     * @return the created Parsable.
+     */
     private Parsable createParsable(Path file) {
         Toml toml = new Toml();
         try (BufferedReader br = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {

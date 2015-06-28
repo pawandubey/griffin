@@ -59,7 +59,11 @@ public class InfoHandler {
 
     }
 
-    public void writeInfoFile() {
+    /**
+     * Writes the info file with the parsing timestamp and a list of paths to
+     * the latest posts.
+     */
+    protected void writeInfoFile() {
         Path infoFilePath = Paths.get(DirectoryCrawler.INFO_FILE);
         try (BufferedWriter bw
                             = Files.newBufferedWriter(infoFilePath,
@@ -83,7 +87,7 @@ public class InfoHandler {
      *
      * @param collection the queue of Parsables
      */
-    public void findLatestPosts(BlockingQueue<Parsable> collection) {
+    protected void findLatestPosts(BlockingQueue<Parsable> collection) {
         collection.stream()
                 .filter(p -> p instanceof Post)
                 .sorted((a, b) -> {
@@ -98,7 +102,7 @@ public class InfoHandler {
      *
      * @param collection the queue of Parsables
      */
-    public void findNavigationPages(BlockingQueue<Parsable> collection) {
+    protected void findNavigationPages(BlockingQueue<Parsable> collection) {
         collection.stream()
                 .filter(p -> p instanceof Page)
                 .filter(p -> p.getTags().contains("nav"))

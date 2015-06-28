@@ -37,6 +37,17 @@ public class Page implements Parsable {
     private String permalink;
     private final List<String> tags;
 
+    /**
+     * Creates a Page instance with the parameters.
+     *
+     * @param titl
+     * @param auth
+     * @param loc
+     * @param cont
+     * @param slu
+     * @param lay
+     * @param tag
+     */
     public Page(String titl, String auth, Path loc, String cont, String slu, String lay, List<String> tag) {
         author = auth;
         title = titl;
@@ -97,11 +108,20 @@ public class Page implements Parsable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *
+     * @return the layout
+     */
     @Override
     public String getLayout() {
         return layout;
     }
 
+    /**
+     * @return the permalink, as decided by whether the user has specified a
+     * custom slug or not. If the slug is not specified, then the permalink is
+     * constructed from the post-title
+     */
     @Override
     public String getPermalink() {
         Path parentDir = Paths.get(SOURCE_DIR).relativize(location.getParent());
@@ -109,11 +129,20 @@ public class Page implements Parsable {
         return permalink;
     }
 
+    /**
+     * Sets the content of the page.
+     *
+     * @param content the content to be set.
+     */
     @Override
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     *
+     * @return the list of tags.
+     */
     @Override
     public List<String> getTags() {
         return tags;

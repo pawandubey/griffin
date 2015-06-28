@@ -16,6 +16,8 @@
 package com.pawandubey.griffin.cli;
 
 /**
+ * Provides an interface which needs to be implemented by all top level griffin
+ * subcommands.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */

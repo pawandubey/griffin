@@ -39,6 +39,18 @@ public class Post implements Parsable {
     private String permalink;
     private final List<String> tags;
 
+    /**
+     * Creates a Post with the given paramenter.
+     *
+     * @param titl the post title
+     * @param auth the post author
+     * @param dat the post date
+     * @param loc the post's Path
+     * @param cont the post's content
+     * @param slu the post slug
+     * @param lay the layout
+     * @param tag the list of tags
+     */
     public Post(String titl, String auth, LocalDate dat,
                 Path loc, String cont, String slu, String lay, List<String> tag) {
         title = titl;
@@ -104,11 +116,19 @@ public class Post implements Parsable {
         }
     }
 
+    /**
+     * @return the layout
+     */
     @Override
     public String getLayout() {
         return layout;
     }
 
+    /**
+     * @return the permalink, as decided by whether the user has specified a
+     * custom slug or not. If the slug is not specified, then the permalink is
+     * constructed from the post-title
+     */
     @Override
     public String getPermalink() {
         Path parentDir = Paths.get(SOURCE_DIR).relativize(location.getParent());
@@ -116,11 +136,19 @@ public class Post implements Parsable {
         return permalink;
     }
 
+    /**
+     * Sets the content of the post to the given String.
+     *
+     * @param content the String representing the new content.
+     */
     @Override
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     * @return the list of tags for the post.
+     */
     @Override
     public List<String> getTags() {
         return tags;

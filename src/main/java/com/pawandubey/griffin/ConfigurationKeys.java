@@ -16,6 +16,8 @@
 package com.pawandubey.griffin;
 
 /**
+ * Handles the keys corresponding to the related config properties, as specified
+ * in the config.toml file.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */

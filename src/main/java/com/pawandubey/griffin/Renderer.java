@@ -42,12 +42,25 @@ public class Renderer {
     private final Template pageTemplate;
     private final Template indexTemplate;
 
+    /**
+     * Creates a new Renderer instance and compiles the templates
+     *
+     * @throws IOException
+     */
     public Renderer() throws IOException {
         postTemplate = handlebar.compile("post");
         pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");
     }
 
+    /**
+     * Renders the Parsable instance with the proper template according to its
+     * layout.
+     *
+     * @param parsable the Parsable to be rendered.
+     * @return the String representation of the rendering.
+     * @throws IOException
+     */
     protected String renderParsable(Parsable parsable) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", config);
@@ -61,6 +74,12 @@ public class Renderer {
         }
     }
 
+    /**
+     * Renders the index page for the site.
+     *
+     * @return the String representation of the rendering.
+     * @throws IOException
+     */
     protected String renderIndex() throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", config);

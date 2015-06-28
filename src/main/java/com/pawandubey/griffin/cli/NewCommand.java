@@ -45,7 +45,9 @@ public class NewCommand implements GriffinCommand {
     @Option(name = "-name", aliases = {"-n"}, metaVar = "<folder_name>", usage = "name of the directory to be created")
     private String name = "griffin";
 
-    
+    /**
+     * Executes the command
+     */
     @Override
     public void execute() {
         try {
