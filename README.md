@@ -1,5 +1,4 @@
 # griffin
-****
 [![Build Status](https://travis-ci.org/pawandubey/griffin.svg)](https://travis-ci.org/pawandubey/griffin)
 ````
                        ___     ___
