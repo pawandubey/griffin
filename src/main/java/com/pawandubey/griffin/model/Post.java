@@ -68,6 +68,7 @@ public class Post implements Parsable {
     /**
      * @return the title
      */
+    @Override
     public String getTitle() {
         return title;
     }
@@ -75,6 +76,7 @@ public class Post implements Parsable {
     /**
      * @return the author
      */
+    @Override
     public String getAuthor() {
         return author;
     }

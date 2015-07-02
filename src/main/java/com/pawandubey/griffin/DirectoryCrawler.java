@@ -57,6 +57,9 @@ public class DirectoryCrawler {
     public static String author = config.getSiteAuthor();
     public final String HEADER_DELIMITER = "#####";
 
+    private final StringBuilder header = new StringBuilder();
+    private final Toml toml = new Toml();
+
     public DirectoryCrawler() {
 
     }
@@ -78,14 +81,14 @@ public class DirectoryCrawler {
      * @param rootPath path to the content directory
      * @throws IOException the exception
      */
-    protected void readIntoQueue(Path rootPath) throws IOException {
-        //long start = System.currentTimeMillis();
+    protected void readIntoQueue(Path rootPath) throws IOException, InterruptedException {
+        long start = System.currentTimeMillis();
         cleanOutputDirectory();
-        //long enddel = System.currentTimeMillis();
+        long enddel = System.currentTimeMillis();
         copyAssets();
-        //long endcop = System.currentTimeMillis();
-        //System.out.println("Deletion: " + (enddel - start));
-        //System.out.println("Copy: " + (endcop - enddel));
+        long endcop = System.currentTimeMillis();
+        System.out.println("Deletion: " + (enddel - start));
+        System.out.println("Copy: " + (endcop - enddel));
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
@@ -127,7 +130,7 @@ public class DirectoryCrawler {
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                 return FileVisitResult.CONTINUE;
             }
-        });
+        });      
     }
 
     //TODO refactor this method to make use of the above method someway.
@@ -197,9 +200,8 @@ public class DirectoryCrawler {
      * @return the created Parsable.
      */
     private Parsable createParsable(Path file) {
-        Toml toml = new Toml();
         try (BufferedReader br = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-            StringBuilder header = new StringBuilder();
+            header.setLength(0);
             String line;
             while ((line = br.readLine()) != null && !line.equals(HEADER_DELIMITER)) {
                 header.append(line).append("\n");
@@ -234,14 +236,14 @@ public class DirectoryCrawler {
      *
      * @throws IOException When a file visit goes wrong
      */
-    private void cleanOutputDirectory() throws IOException {
-        Path pathToClean = Paths.get(OUTPUT_DIRECTORY);
-        Files.walkFileTree(pathToClean, new FileVisitor<Path>() {
+    private void cleanOutputDirectory() throws IOException, InterruptedException {
+        Path pathToClean = Paths.get(OUTPUT_DIRECTORY).toAbsolutePath().normalize();
+//
+//        ProcessBuilder pb = new ProcessBuilder("rm", "-r", OUTPUT_DIRECTORY);
+//        Process p = pb.start();
+//        p.waitFor();
 
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                return FileVisitResult.CONTINUE;
-            }
+        Files.walkFileTree(pathToClean, new SimpleFileVisitor<Path>() {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -256,14 +258,13 @@ public class DirectoryCrawler {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                if (!Files.isSameFile(dir, pathToClean)) {
-                    Files.delete(dir);
-                }
+                Files.delete(dir);
                 return FileVisitResult.CONTINUE;
             }
 
         });
 
+        Files.createDirectory(pathToClean);
     }
 
     /**

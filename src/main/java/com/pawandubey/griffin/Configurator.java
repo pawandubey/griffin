@@ -60,7 +60,7 @@ public class Configurator {
     private Integer port = 9090;
 
     public Configurator() {
-        this.siteBaseUrl = "http://localhost:" + port;
+        
         if (Files.exists(Paths.get(CONFIG_FILE))) {
             Toml toml = new Toml();
             toml.parse(new File(CONFIG_FILE));
@@ -76,6 +76,7 @@ public class Configurator {
             port = Integer.valueOf(toml.getLong(PORT.key).toString());
             //template = ROOT_DIRECTORY + FILE_SEPARATOR + "assets" + FILE_SEPARATOR + "templates" + FILE_SEPARATOR + theme;
         }
+        this.siteBaseUrl = "http://localhost:" + port;
     }
 
     protected Configurator withSiteName(String name) {

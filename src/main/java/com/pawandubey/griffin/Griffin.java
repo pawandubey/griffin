@@ -115,18 +115,23 @@ public class Griffin {
      */
     public void publish(boolean fastParse) throws IOException, InterruptedException {
         InfoHandler info = new InfoHandler();
+        long start = System.currentTimeMillis();
         if (fastParse == true) {
             crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
         }
         else {
             crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
         }
+        long read = System.currentTimeMillis();
         info.findLatestPosts(fileQueue);
         info.findNavigationPages(fileQueue);
+        long ps = System.currentTimeMillis();
         parser = new Parser();
         parser.parse(fileQueue);
         info.writeInfoFile();
-
+        long pe = System.currentTimeMillis();
+        System.out.println("Crawl: " + (read - start));
+        System.out.println("Parse: " + (pe - ps));
     }
 
     /**
@@ -215,12 +220,24 @@ public class Griffin {
 
     private void showWelcomeMessage(Path path, String name) {
         StringBuilder welcomeMessage = new StringBuilder();
-
+        printAsciiGriffin();
         welcomeMessage.append("Heya! This is griffin. Your personal, fast and easy static site generator. (And an overall good guy)").append("\n");
         welcomeMessage.append("You have chosen to create your new griffin site at: ").append(path.resolve(name).toString()).append("\n");
         welcomeMessage.append("I'd love to help you set up some initial settings for your site, so let's go.").append("\n");
         welcomeMessage.append("I'll ask you a set of simple questions and you can type in your answer. Some questions have a default answer, which will be marked in brackets.\nYou can just press enter to accept the default value in those cases.").append("\n\n");
         System.out.println(welcomeMessage);
+    }
+
+    public void printAsciiGriffin() {
+        System.out.println("                       ___     ___                  ");
+        System.out.println("                __   /'___\\  /'___\\  __             ");
+        System.out.println("   __    _ __  /\\_\\ /\\ \\__/ /\\ \\__/ /\\_\\     ___    ");
+        System.out.println(" /'_ `\\ /\\`'__\\\\/\\ \\\\ \\ ,__\\\\ \\ ,__\\\\/\\ \\  /' _ `\\  ");
+        System.out.println("/\\ \\L\\ \\\\ \\ \\/  \\ \\ \\\\ \\ \\_/ \\ \\ \\_/ \\ \\ \\ /\\ \\/\\ \\ ");
+        System.out.println("\\ \\____ \\\\ \\_\\   \\ \\_\\\\ \\_\\   \\ \\_\\   \\ \\_\\\\ \\_\\ \\_\\");
+        System.out.println(" \\/___L\\ \\\\/_/    \\/_/ \\/_/    \\/_/    \\/_/ \\/_/\\/_/");
+        System.out.println("   /\\____/                                          ");
+        System.out.println("   \\_/__/                                           ");
     }
 
     private void checkPathValidity(Path path, String name) throws FileSystemException, NotDirectoryException, FileAlreadyExistsException {

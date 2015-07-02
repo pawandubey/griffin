@@ -56,6 +56,7 @@ public class PublishCommand implements GriffinCommand {
         }
         try {
             Griffin griffin = new Griffin();
+            griffin.printAsciiGriffin();
             griffin.publish(fastParse);
         }
         catch (IOException | InterruptedException ex) {

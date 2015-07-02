@@ -49,6 +49,7 @@ public class PreviewCommand implements GriffinCommand {
             parser.printUsage(System.out);
         }
         else {
+            griffin.printAsciiGriffin();
             griffin.preview(port);
         }
     }
