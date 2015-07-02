@@ -23,17 +23,18 @@ package com.pawandubey.griffin;
  */
 public enum ConfigurationKeys {
 
-    SITE_NAME("sitename"),
-    SITE_AUTHOR("siteauthor"),
-    SITE_BASE_URL("sitebaseurl"),
-    SITE_TAGLINE("sitetagline"),
+    SITE_NAME("site.name"),
+    SITE_AUTHOR("site.author"),
+    SITE_BASE_URL("site.baseurl"),
+    SITE_TAGLINE("site.tagline"),
     SOURCE_DIR("source"),
     OUTPUT_DIR("output"),
     EXCLUDE("exclude"),
     IN_DATE_FORMAT("inputdate"),
     OUT_DATE_FORMAT("outputdate"),
     THEME("theme"),
-    PORT("port");
+    PORT("port"),
+    SOCIAL("social");
 
     public final String key;
 

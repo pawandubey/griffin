@@ -25,6 +25,7 @@ import static com.pawandubey.griffin.ConfigurationKeys.SITE_AUTHOR;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_BASE_URL;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_NAME;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_TAGLINE;
+import static com.pawandubey.griffin.ConfigurationKeys.SOCIAL;
 import static com.pawandubey.griffin.ConfigurationKeys.SOURCE_DIR;
 import static com.pawandubey.griffin.ConfigurationKeys.THEME;
 import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
@@ -38,6 +39,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Reads and updates configuration for the site from the config.toml file.
@@ -58,8 +60,8 @@ public class Configurator {
     private String inputDateFormat = "yyyy MM dd";
     private String outputDateFormat;
     private String theme = "wells";
-    //private String template = ROOT_DIRECTORY + FILE_SEPARATOR + "assets" + FILE_SEPARATOR + "templates" + FILE_SEPARATOR + theme;
     private Integer port = 9090;
+    private Social social;
 
     public Configurator() {
         
@@ -77,7 +79,9 @@ public class Configurator {
             outputDateFormat = toml.getString(OUT_DATE_FORMAT.key);
             theme = toml.getString(THEME.key);
             port = Integer.valueOf(toml.getLong(PORT.key).toString());
-            //template = ROOT_DIRECTORY + FILE_SEPARATOR + "assets" + FILE_SEPARATOR + "templates" + FILE_SEPARATOR + theme;
+            Map<String, Object> socialLinks = toml.getTable(SOCIAL.key).to(Map.class);
+            social = new Social(socialLinks);
+
         }
         this.siteBaseUrl = "http://localhost:" + port;
     }
@@ -224,5 +228,92 @@ public class Configurator {
      */
     public Integer getPort() {
         return port;
+    }
+
+    /**
+     *
+     * @return the social links
+     */
+    public Social getSocial() {
+        return social;
+    }
+
+    /**
+     * Encapsulates the social media links in the configuration
+     */
+    public static class Social {
+
+        private String gplus;
+        private String disqus;
+        private String fb;
+        private String twitter;
+        private String github;
+        private String so;
+
+        Social(Map<String, Object> map) {
+            for (String k : map.keySet()) {
+                if (k.equals("gplus")) {
+                    gplus = (String) map.get(k);
+                }
+                else if (k.equals("disqus")) {
+                    disqus = (String) map.get(k);
+                }
+                else if (k.equals("fb")) {
+                    fb = (String) map.get(k);
+                }
+                else if (k.equals("twitter")) {
+                    twitter = (String) map.get(k);
+                }
+                else if (k.equals("so")) {
+                    so = (String) map.get(k);
+                }
+                else {
+                    github = (String) map.get(k);
+                }
+            }
+            }
+
+        /**
+         * @return the gplus
+         */
+        public String getGplus() {
+            return gplus;
+        }
+
+        /**
+         * @return the disqus
+         */
+        public String getDisqus() {
+            return disqus;
+        }
+
+        /**
+         * @return the fb
+         */
+        public String getFb() {
+            return fb;
+        }
+
+        /**
+         * @return the twitter
+         */
+        public String getTwitter() {
+            return twitter;
+        }
+
+        /**
+         * @return the github
+         */
+        public String getGithub() {
+            return github;
+        }
+
+        /**
+         * @return the so
+         */
+        public String getSo() {
+            return so;
+        }
+
     }
 }
