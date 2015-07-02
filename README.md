@@ -2,6 +2,16 @@
 ****
 [![Build Status](https://travis-ci.org/pawandubey/griffin.svg)](https://travis-ci.org/pawandubey/griffin)
 
+                       ___     ___
+                __   /'___\  /'___\  __
+   __    _ __  /\_\ /\ \__/ /\ \__/ /\_\     ___
+ /'_ `\ /\`'__\\/\ \\ \ ,__\\ \ ,__\\/\ \  /' _ `\
+/\ \L\ \\ \ \/  \ \ \\ \ \_/ \ \ \_/ \ \ \ /\ \/\ \
+\ \____ \\ \_\   \ \_\\ \_\   \ \_\   \ \_\\ \_\ \_\
+ \/___L\ \\/_/    \/_/ \/_/    \/_/    \/_/ \/_/\/_/
+   /\____/
+   \_/__/
+
 ## Contribution guidelines
 To contribute, 
 * First time:
