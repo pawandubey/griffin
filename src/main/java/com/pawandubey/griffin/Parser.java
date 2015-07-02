@@ -17,8 +17,12 @@ package com.pawandubey.griffin;
 
 import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
+import static com.pawandubey.griffin.Data.config;
+import static com.pawandubey.griffin.Data.tags;
 import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIRECTORY;
 import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
+import static com.pawandubey.griffin.DirectoryCrawler.TAG_DIRECTORY;
 import com.pawandubey.griffin.model.Parsable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class Parser {
 
-    private final Configuration config;
+    private final Configuration renderConfig;
     private final Renderer renderer;
     private String parsedContent;
 
@@ -50,7 +55,7 @@ public class Parser {
      */
     public Parser() throws IOException {
         renderer = new Renderer();
-        config = Configuration.builder().enableSafeMode()
+        renderConfig = Configuration.builder().enableSafeMode()
                 .forceExtentedProfile()
                 .setAllowSpacesInFencedCodeBlockDelimiters(true)
                 .setEncoding("UTF-8")
@@ -68,10 +73,13 @@ public class Parser {
     protected void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
         Parsable p;
         String content;
+        if (config.getRenderTags()) {
+            Files.createDirectory(Paths.get(TAG_DIRECTORY));
+        }
         while (!collection.isEmpty()) {
             p = collection.take();
             writeParsedFile(p);
-            //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "\n" + p.getDate() + " " + p.getLocation());
+            //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "LINE_SEPARATOR" + p.getDate() + " " + p.getLocation());
         }
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"), StandardCharsets.UTF_8)) {
@@ -94,7 +102,7 @@ public class Parser {
         String line;
         try (BufferedReader br = Files.newBufferedReader(p, StandardCharsets.UTF_8)) {
             while ((line = br.readLine()) != null) {
-                sb.append(line).append("\n");
+                sb.append(line).append(LINE_SEPARATOR);
             }
         }
         catch (IOException ex) {
@@ -118,15 +126,37 @@ public class Parser {
         if (Files.notExists(parsedDir)) {
             Files.createDirectory(parsedDir);
         }
+
         Path htmlPath = parsedDir.resolve("index.html");
 
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
-            parsedContent = Processor.process(p.getContent(), config);
+            parsedContent = Processor.process(p.getContent(), renderConfig);
             p.setContent(parsedContent);
             bw.write(renderer.renderParsable(p));
         }
         catch (IOException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (config.getRenderTags()) {
+            renderTags(p, htmlPath);
+        }
+    }
+
+    private void renderTags(Parsable p, Path htmlPath) throws IOException {
+        List<String> ptags = p.getTags();
+        for (String t : ptags) {
+            if (!t.equals("nav")) {
+                tags.add(t);
+                if (config.getRenderTags()) {
+                    Path tagDir = Paths.get(TAG_DIRECTORY).resolve(t);
+                    if (Files.notExists(tagDir)) {
+                        Files.createDirectory(tagDir);
+                    }
+                    Files.createDirectory(tagDir.resolve(p.getSlug()));
+                    Path link = tagDir.resolve(p.getSlug()).resolve("index.html");
+                    Files.createSymbolicLink(link, htmlPath);
+                }
+            }
         }
     }
 }

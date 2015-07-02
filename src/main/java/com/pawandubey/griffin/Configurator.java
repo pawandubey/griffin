@@ -21,6 +21,7 @@ import static com.pawandubey.griffin.ConfigurationKeys.IN_DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.OUTPUT_DIR;
 import static com.pawandubey.griffin.ConfigurationKeys.OUT_DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.PORT;
+import static com.pawandubey.griffin.ConfigurationKeys.RENDER_TAGS;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_AUTHOR;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_BASE_URL;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_NAME;
@@ -62,9 +63,11 @@ public class Configurator {
     private String theme = "wells";
     private Integer port = 9090;
     private Social social;
+    private boolean renderTags = false;
+    public static final String LINE_SEPARATOR = System.lineSeparator();
 
     public Configurator() {
-        
+
         if (Files.exists(Paths.get(CONFIG_FILE))) {
             Toml toml = new Toml();
             toml.parse(new File(CONFIG_FILE));
@@ -81,7 +84,7 @@ public class Configurator {
             port = Integer.valueOf(toml.getLong(PORT.key).toString());
             Map<String, Object> socialLinks = toml.getTable(SOCIAL.key).to(Map.class);
             social = new Social(socialLinks);
-
+            renderTags = toml.getBoolean(RENDER_TAGS.key);
         }
         this.siteBaseUrl = "http://localhost:" + port;
     }
@@ -127,26 +130,56 @@ public class Configurator {
     }
 
     protected void writeConfig(Path path) throws IOException {
-
-        StringBuilder initialConfig = new StringBuilder();
-        initialConfig.append("#site details\n")
-                .append(SITE_NAME.key).append(" = ").append("\"").append(this.siteName).append("\"").append("\n")
-                .append(SITE_TAGLINE.key).append(" = ").append("\"").append(this.siteTagline).append("\"").append("\n")
-                .append(SITE_AUTHOR.key).append(" = ").append("\"").append(this.siteAuthor).append("\"").append("\n")
-                .append(SITE_BASE_URL.key).append(" = ").append("\"").append(this.siteBaseUrl).append("\"").append("\n")
-                .append("\n\n#parsing details\n")
-                .append(SOURCE_DIR.key).append(" = ").append("\"").append(this.sourceDir).append("\"").append("\n")
-                .append(OUTPUT_DIR.key).append(" = ").append("\"").append(this.outputDir).append("\"").append("\n")
-                .append(EXCLUDE.key).append(" = ").append("[]").append("\n")
-                .append("\n\n#styling\n")
-                .append(IN_DATE_FORMAT.key).append(" = ").append("\"").append(this.inputDateFormat).append("\"").append("\n")
-                .append(OUT_DATE_FORMAT.key).append(" = ").append("\"").append(this.outputDateFormat).append("\"").append("\n")
-                .append(THEME.key).append(" = ").append("\"").append(this.theme).append("\"").append("\n")
-                .append("\n\n#preview\n")
-                .append(PORT.key).append(" = ").append(this.port);
+        String conf = "#parsing details" + LINE_SEPARATOR
+                      + "source = \"src\"" + LINE_SEPARATOR
+                      + "output = \"output\"" + LINE_SEPARATOR
+                      + "exclude = []" + LINE_SEPARATOR
+                      + "" + LINE_SEPARATOR
+                      + "#styling" + LINE_SEPARATOR
+                      + "inputdate = \"yyyy MM dd\"" + LINE_SEPARATOR
+                      + "outputdate = \"MMM d yyyy\"" + LINE_SEPARATOR
+                      + "theme = \"hyde\"" + LINE_SEPARATOR
+                      + "" + LINE_SEPARATOR
+                      + "#render files as per tags?" + LINE_SEPARATOR
+                      + "rendertags = false" + LINE_SEPARATOR
+                      + "" + LINE_SEPARATOR
+                      + "#preview" + LINE_SEPARATOR
+                      + "port = 9090" + LINE_SEPARATOR
+                      + "" + LINE_SEPARATOR
+                      + "#social media details" + LINE_SEPARATOR
+                      + "[social]" + LINE_SEPARATOR
+                      + "	disqus = \"your disqus shortcode\"" + LINE_SEPARATOR
+                      + "	fb = \"your facebook profile id\"" + LINE_SEPARATOR
+                      + "	twitter = \"your twitter handle\"" + LINE_SEPARATOR
+                      + "	github = \"your github profile id\"" + LINE_SEPARATOR
+                      + "	gplus = \"your google plus profile id\"" + LINE_SEPARATOR
+                      + "	so = \"your stackoverflow profile id\"" + LINE_SEPARATOR
+                      + "" + LINE_SEPARATOR
+                      + "#site details" + LINE_SEPARATOR
+                      + "[site]" + LINE_SEPARATOR
+                      + "	name = \"Perf\"" + LINE_SEPARATOR
+                      + "	tagline = \"Faster\"" + LINE_SEPARATOR
+                      + "	author = \"Pawan Dubey\"" + LINE_SEPARATOR
+                      + "	baseurl = \"http://localhost:9090\"";
+//        StringBuilder initialConfig = new StringBuilder();
+//        initialConfig.append("#site details"+LINE_SEPARATOR)
+//                .append(SITE_NAME.key).append(" = ").append("\"").append(this.siteName).append("\"").append(""+LINE_SEPARATOR)
+//                .append(SITE_TAGLINE.key).append(" = ").append("\"").append(this.siteTagline).append("\"").append(""+LINE_SEPARATOR)
+//                .append(SITE_AUTHOR.key).append(" = ").append("\"").append(this.siteAuthor).append("\"").append(""+LINE_SEPARATOR)
+//                .append(SITE_BASE_URL.key).append(" = ").append("\"").append(this.siteBaseUrl).append("\"").append(""+LINE_SEPARATOR)
+//                .append("\n\n#parsing details"+LINE_SEPARATOR)
+//                .append(SOURCE_DIR.key).append(" = ").append("\"").append(this.sourceDir).append("\"").append(""+LINE_SEPARATOR)
+//                .append(OUTPUT_DIR.key).append(" = ").append("\"").append(this.outputDir).append("\"").append(""+LINE_SEPARATOR)
+//                .append(EXCLUDE.key).append(" = ").append("[]").append(""+LINE_SEPARATOR)
+//                .append("\n\n#styling"+LINE_SEPARATOR)
+//                .append(IN_DATE_FORMAT.key).append(" = ").append("\"").append(this.inputDateFormat).append("\"").append(""+LINE_SEPARATOR)
+//                .append(OUT_DATE_FORMAT.key).append(" = ").append("\"").append(this.outputDateFormat).append("\"").append(""+LINE_SEPARATOR)
+//                .append(THEME.key).append(" = ").append("\"").append(this.theme).append("\"").append(""+LINE_SEPARATOR)
+//                .append("\n\n#preview"+LINE_SEPARATOR)
+//                .append(PORT.key).append(" = ").append(this.port);
 
         try (BufferedWriter br = Files.newBufferedWriter(path.resolve("config.toml"), StandardOpenOption.TRUNCATE_EXISTING)) {
-            br.write(initialConfig.toString().trim());
+            br.write(conf.trim());
         }
         Files.move(path.resolve("output"), path.resolve(this.outputDir), StandardCopyOption.REPLACE_EXISTING);
         Files.move(path.resolve("content"), path.resolve(this.sourceDir), StandardCopyOption.REPLACE_EXISTING);
@@ -172,6 +205,7 @@ public class Configurator {
     public String getSiteAuthor() {
         return siteAuthor;
     }
+
     ;
     /**
      * @return the siteBaseUrl
@@ -238,6 +272,10 @@ public class Configurator {
         return social;
     }
 
+    public boolean getRenderTags() {
+        return renderTags;
+    }
+
     /**
      * Encapsulates the social media links in the configuration
      */
@@ -271,7 +309,7 @@ public class Configurator {
                     github = (String) map.get(k);
                 }
             }
-            }
+        }
 
         /**
          * @return the gplus

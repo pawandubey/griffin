@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin;
 
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import static com.pawandubey.griffin.Data.config;
 import static com.pawandubey.griffin.Data.fileQueue;
 import com.pawandubey.griffin.cli.GriffinCommand;
@@ -48,7 +49,6 @@ import org.kohsuke.args4j.spi.SubCommands;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Griffin {
-
 
     private final DirectoryCrawler crawler;
     private Parser parser;
@@ -153,17 +153,17 @@ public class Griffin {
         String moreHelp = "run " + title + " <subcommand> " + "--help to see more help about individual subcommands";
 
         StringBuilder sb = new StringBuilder();
-        sb.append(header).append("\n");
+        sb.append(header).append(LINE_SEPARATOR);
         if (this.version) {
             System.out.println(sb.toString());
         }
         else {
             sb.append(desc)
-                    .append("\n")
+                    .append(LINE_SEPARATOR)
                     .append(usage)
-                    .append("\n")
+                    .append(LINE_SEPARATOR)
                     .append(moreHelp)
-                    .append("\n\n");
+                    .append(LINE_SEPARATOR + LINE_SEPARATOR);
             System.out.println(sb.toString());
         }
     }
@@ -219,10 +219,10 @@ public class Griffin {
     private void showWelcomeMessage(Path path, String name) {
         StringBuilder welcomeMessage = new StringBuilder();
         printAsciiGriffin();
-        welcomeMessage.append("Heya! This is griffin. Your personal, fast and easy static site generator. (And an overall good guy)").append("\n");
-        welcomeMessage.append("You have chosen to create your new griffin site at: ").append(path.resolve(name).toString()).append("\n");
-        welcomeMessage.append("I'd love to help you set up some initial settings for your site, so let's go.").append("\n");
-        welcomeMessage.append("I'll ask you a set of simple questions and you can type in your answer. Some questions have a default answer, which will be marked in brackets.\nYou can just press enter to accept the default value in those cases.").append("\n\n");
+        welcomeMessage.append("Heya! This is griffin. Your personal, fast and easy static site generator. (And an overall good guy)").append(LINE_SEPARATOR);
+        welcomeMessage.append("You have chosen to create your new griffin site at: ").append(path.resolve(name).toString()).append(LINE_SEPARATOR);
+        welcomeMessage.append("I'd love to help you set up some initial settings for your site, so let's go.").append(LINE_SEPARATOR);
+        welcomeMessage.append("I'll ask you a set of simple questions and you can type in your answer. Some questions have a default answer, which will be marked in brackets.").append(LINE_SEPARATOR).append("You can just press enter to accept the default value in those cases.").append(LINE_SEPARATOR).append(LINE_SEPARATOR);
         System.out.println(welcomeMessage);
     }
 
@@ -240,15 +240,15 @@ public class Griffin {
 
     private void checkPathValidity(Path path, String name) throws FileSystemException, NotDirectoryException, FileAlreadyExistsException {
         if (!Files.isWritable(path)) {
-            System.out.println("That path doesn't seem to be writable :(\nCheck if you have write permission to that path and try again.");
+            System.out.println("That path doesn't seem to be writable :(" + LINE_SEPARATOR + "Check if you have write permission to that path and try again.");
             throw new java.nio.file.FileSystemException(path.toString());
         }
         if (Files.exists(path.resolve(name))) {
-            System.out.println("Aw shucks! It seems like there is already a file of that name at that path :(\nTry again with another name.");
+            System.out.println("Aw shucks! It seems like there is already a file of that name at that path :(" + LINE_SEPARATOR + "Try again with another name.");
             throw new FileAlreadyExistsException(path.resolve(name).toString());
         }
         if (!Files.isDirectory(path)) {
-            System.out.println("Aw, man. That path does not seem to be a valid directory :(\nTry with another path again.");
+            System.out.println("Aw, man. That path does not seem to be a valid directory :(" + LINE_SEPARATOR + "Try with another path again.");
             throw new java.nio.file.NotDirectoryException(path.toString());
         }
     }

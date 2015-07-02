@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import static com.pawandubey.griffin.Data.config;
 import com.pawandubey.griffin.Griffin;
 import org.kohsuke.args4j.CmdLineParser;
@@ -44,7 +45,7 @@ public class PreviewCommand implements GriffinCommand {
         if (help) {
             System.out.println("Preview the site on the given port: default: 9090");
             System.out.println("usage: griffin preview [option]");
-            System.out.println("Options: \n");
+            System.out.println("Options: " + LINE_SEPARATOR);
             CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
             parser.printUsage(System.out);
         }

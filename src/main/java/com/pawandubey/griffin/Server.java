@@ -47,7 +47,7 @@ public class Server {
  9090.
      */
     protected void startPreview() {
-        ResourceHandler resourceHandler = resource(new PathResourceManager(Paths.get(OUTPUT_DIRECTORY), 100, true))
+        ResourceHandler resourceHandler = resource(new PathResourceManager(Paths.get(OUTPUT_DIRECTORY), 100, true, true))
                 .setDirectoryListingEnabled(false);
         FileErrorPageHandler errorHandler = new FileErrorPageHandler(Paths.get(Renderer.templateRoot).resolve("404.html"), StatusCodes.NOT_FOUND);
         errorHandler.setNext(resourceHandler);

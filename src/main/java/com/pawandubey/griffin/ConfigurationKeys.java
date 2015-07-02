@@ -34,6 +34,7 @@ public enum ConfigurationKeys {
     OUT_DATE_FORMAT("outputdate"),
     THEME("theme"),
     PORT("port"),
+    RENDER_TAGS("rendertags"),
     SOCIAL("social");
 
     public final String key;

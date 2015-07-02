@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import com.pawandubey.griffin.Griffin;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -49,7 +50,7 @@ public class PublishCommand implements GriffinCommand {
         if (help) {
             System.out.println("Publish the content in the current Griffin directory.");
             System.out.println("usage: griffin publish [option]");
-            System.out.println("Options: \n");
+            System.out.println("Options: " + LINE_SEPARATOR);
             CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
             parser.printUsage(System.out);
             return;

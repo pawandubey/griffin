@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin.cli;
 
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import com.pawandubey.griffin.Griffin;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -55,7 +56,7 @@ public class NewCommand implements GriffinCommand {
             if (help || args.isEmpty()) {
                 System.out.println("Scaffold out a new Griffin directory structure.");
                 System.out.println("usage: griffin new [option] <path>");
-                System.out.println("Options: \n");
+                System.out.println("Options: " + LINE_SEPARATOR);
                 CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
                 parser.printUsage(System.out);
                 return;

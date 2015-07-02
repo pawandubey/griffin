@@ -16,6 +16,7 @@
 package com.pawandubey.griffin;
 
 import com.moandjiezana.toml.Toml;
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import static com.pawandubey.griffin.Data.config;
 import static com.pawandubey.griffin.Renderer.templateRoot;
 import com.pawandubey.griffin.model.Page;
@@ -55,7 +56,7 @@ public class DirectoryCrawler {
     public static final String INFO_FILE = ROOT_DIRECTORY + FILE_SEPARATOR + ".info";
     public static String author = config.getSiteAuthor();
     public final String HEADER_DELIMITER = "#####";
-
+    public static final String TAG_DIRECTORY = OUTPUT_DIRECTORY + FILE_SEPARATOR + "tags";
     private final StringBuilder header = new StringBuilder();
     private final Toml toml = new Toml();
 
@@ -203,7 +204,7 @@ public class DirectoryCrawler {
             header.setLength(0);
             String line;
             while ((line = br.readLine()) != null && !line.equals(HEADER_DELIMITER)) {
-                header.append(line).append("\n");
+                header.append(line).append(LINE_SEPARATOR);
             }
             toml.parse(header.toString());
             String title = toml.getString("title");
@@ -216,7 +217,7 @@ public class DirectoryCrawler {
             List<String> tag = toml.getList("tags");
             StringBuilder content = new StringBuilder();
             while ((line = br.readLine()) != null) {
-                content.append(line).append("\n");
+                content.append(line).append(LINE_SEPARATOR);
             }
             if (layout.equals("post")) {
                 return new Post(title, author, publishDate, file, content.toString(), slug, layout, tag);

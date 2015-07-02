@@ -16,6 +16,7 @@
 package com.pawandubey.griffin;
 
 import com.github.rjeschke.txtmark.BlockEmitter;
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import java.util.List;
 
 /**
@@ -57,9 +58,9 @@ public class CodeBlockEmitter implements BlockEmitter {
                         break;
                 }
             }
-            out.append('\n');
+            out.append(LINE_SEPARATOR);
         }
-        out.append("</code></pre>\n");
+        out.append("</code></pre>").append(LINE_SEPARATOR);
     }
 
 }

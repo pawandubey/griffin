@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin;
 
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import com.pawandubey.griffin.model.Page;
 import com.pawandubey.griffin.model.Parsable;
 import com.pawandubey.griffin.model.Post;
@@ -28,8 +29,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,8 +68,8 @@ public class InfoHandler {
                                                       StandardOpenOption.WRITE,
                                                       StandardOpenOption.TRUNCATE_EXISTING)) {
             bw.write(calculateTimeStamp());
-            bw.write("\n" + String.join("\n", Data.latestPosts.stream()
-                                        .map(p -> p.getLocation().toString())
+            bw.write(LINE_SEPARATOR + String.join(LINE_SEPARATOR, Data.latestPosts.stream()
+                                                  .map(p -> p.getLocation().toString())
                                         .collect(Collectors.toList())));
         }
         catch (IOException ex) {
