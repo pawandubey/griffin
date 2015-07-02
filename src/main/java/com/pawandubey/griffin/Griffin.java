@@ -15,12 +15,12 @@
  */
 package com.pawandubey.griffin;
 
-import static com.pawandubey.griffin.DirectoryCrawler.config;
+import static com.pawandubey.griffin.Data.config;
+import static com.pawandubey.griffin.Data.fileQueue;
 import com.pawandubey.griffin.cli.GriffinCommand;
 import com.pawandubey.griffin.cli.NewCommand;
 import com.pawandubey.griffin.cli.PreviewCommand;
 import com.pawandubey.griffin.cli.PublishCommand;
-import com.pawandubey.griffin.model.Parsable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.kohsuke.args4j.Argument;
@@ -50,7 +49,6 @@ import org.kohsuke.args4j.spi.SubCommands;
  */
 public class Griffin {
 
-    public final static LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
 
     private final DirectoryCrawler crawler;
     private Parser parser;
@@ -100,7 +98,7 @@ public class Griffin {
 
         Initializer init = new Initializer();
         init.scaffold(path, name);
-        config.writeConfig(path.resolve(name));
+        Data.config.writeConfig(path.resolve(name));
     }
 
     /**
@@ -177,19 +175,19 @@ public class Griffin {
         showWelcomeMessage(path, name);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-        System.out.println("1. What would you like to call your site?(" + config.getSiteName() + "):");
+        System.out.println("1. What would you like to call your site?Data.(" + config.getSiteName() + "):");
         nam = br.readLine();
         System.out.println("2. Who's authoring this site?");
         auth = br.readLine();
-        System.out.println("3. What will be the tagline for the site?(" + config.getSiteTagline() + "):");
+        System.out.println("3. What will be the tagline for the Data.site?(" + config.getSiteTagline() + "):");
         tag = br.readLine();
-        System.out.println("4. What will you like to name the folder where your posts will be stored?(" + config.getSourceDir() + "):");
+        System.out.println("4. What will you like to name the folder where your posts will Data.be stored?(" + config.getSourceDir() + "):");
         src = br.readLine();
-        System.out.println("5. What will you like to name the folder where the generated site will be stored?(" + config.getOutputDir() + "):");
+        System.out.println("5. What will you like to name the folder where the generated site Data.will be stored?(" + config.getOutputDir() + "):");
         out = br.readLine();
-        System.out.println("6. What will you like to format the dates on your posts and pages as?(" + config.getDateFormat() + "):");
+        System.out.println("6. What will you like to format the dates on yourData. posts and pages as?(" + config.getInputDateFormat() + "):");
         date = br.readLine();
-        System.out.println("7. On what port will you like to see the live preview of your site?(" + config.getPort() + "):");
+        System.out.println("7. On what port will you like to see the lData.ive preview of your site?(" + config.getPort() + "):");
         port = br.readLine();
         finalizeConfigurationSettings(nam, auth, tag, src, out, date, port);
     }
@@ -210,7 +208,7 @@ public class Griffin {
         if (out != null && !out.equals(config.getOutputDir()) && !out.equals("")) {
             config.withOutputDir(out);
         }
-        if (date != null && !date.equals(config.getDateFormat()) && !date.equals("")) {
+        if (date != null && !date.equals(config.getInputDateFormat()) && !date.equals("")) {
             config.withDateFormat(date);
         }
         if (port != null && !port.equals(config.getPort().toString()) && !port.equals("")) {

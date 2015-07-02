@@ -45,8 +45,6 @@ public class InfoHandler {
 
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd HH:mm:ss");
     static String LAST_PARSE_DATE;
-    protected final static List<Parsable> latestPosts = new ArrayList<>();
-    protected final static List<Parsable> navPages = new ArrayList<>();
 
     public InfoHandler() {
         try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
@@ -71,7 +69,7 @@ public class InfoHandler {
                                                       StandardOpenOption.WRITE,
                                                       StandardOpenOption.TRUNCATE_EXISTING)) {
             bw.write(calculateTimeStamp());
-            bw.write("\n" + String.join("\n", latestPosts.stream()
+            bw.write("\n" + String.join("\n", Data.latestPosts.stream()
                                         .map(p -> p.getLocation().toString())
                                         .collect(Collectors.toList())));
         }
@@ -93,7 +91,7 @@ public class InfoHandler {
                 .sorted((a, b) -> {
                     return b.getDate().compareTo(a.getDate());
                 }).limit(5)
-                .forEach(p -> latestPosts.add(p));
+                .forEach(p -> Data.latestPosts.add(p));
 
     }
 
@@ -106,7 +104,7 @@ public class InfoHandler {
         collection.stream()
                 .filter(p -> p instanceof Page)
                 .filter(p -> p.getTags().contains("nav"))
-                .forEach(p -> navPages.add(p));
+                .forEach(p -> Data.navPages.add(p));
     }
 
     /**

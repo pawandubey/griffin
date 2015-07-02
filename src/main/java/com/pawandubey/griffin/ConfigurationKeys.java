@@ -30,7 +30,8 @@ public enum ConfigurationKeys {
     SOURCE_DIR("source"),
     OUTPUT_DIR("output"),
     EXCLUDE("exclude"),
-    DATE_FORMAT("dateformat"),
+    IN_DATE_FORMAT("inputdate"),
+    OUT_DATE_FORMAT("outputdate"),
     THEME("theme"),
     PORT("port");
 

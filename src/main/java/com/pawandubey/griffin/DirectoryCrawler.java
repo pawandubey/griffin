@@ -16,7 +16,7 @@
 package com.pawandubey.griffin;
 
 import com.moandjiezana.toml.Toml;
-import static com.pawandubey.griffin.Griffin.fileQueue;
+import static com.pawandubey.griffin.Data.config;
 import static com.pawandubey.griffin.Renderer.templateRoot;
 import com.pawandubey.griffin.model.Page;
 import com.pawandubey.griffin.model.Parsable;
@@ -53,7 +53,6 @@ public class DirectoryCrawler {
     public static final String SOURCE_DIRECTORY = ROOT_DIRECTORY + FILE_SEPARATOR + "content";
     public static final String OUTPUT_DIRECTORY = ROOT_DIRECTORY + FILE_SEPARATOR + "output";
     public static final String INFO_FILE = ROOT_DIRECTORY + FILE_SEPARATOR + ".info";
-    public static Configurator config = new Configurator();
     public static String author = config.getSiteAuthor();
     public final String HEADER_DELIMITER = "#####";
 
@@ -108,7 +107,7 @@ public class DirectoryCrawler {
 
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
                         Parsable parsable = createParsable(file);
-                        fileQueue.put(parsable);
+                        Data.fileQueue.put(parsable);
                     }
                     else {
                         Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
@@ -166,7 +165,7 @@ public class DirectoryCrawler {
                     if (fileModified.isAfter(lastParse)) {
                         if (Files.probeContentType(file).equals("text/x-markdown")) {
                             Parsable parsable = createParsable(file);
-                            fileQueue.put(parsable);
+                            Data.fileQueue.put(parsable);
                         }
                         else {
                             Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
@@ -211,7 +210,8 @@ public class DirectoryCrawler {
             author = toml.getString("author") != null ? toml.getString("author") : author;
             String date = toml.getString("date");
             String slug = toml.getString("slug");
-            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(config.getDateFormat()));
+            LocalDate publishDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(config.getInputDateFormat()));
+            publishDate = LocalDate.parse(publishDate.format(DateTimeFormatter.ofPattern(config.getOutputDateFormat())), DateTimeFormatter.ofPattern(config.getOutputDateFormat()));
             String layout = toml.getString("layout");
             List<String> tag = toml.getList("tags");
             StringBuilder content = new StringBuilder();

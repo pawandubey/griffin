@@ -16,9 +16,10 @@
 package com.pawandubey.griffin;
 
 import com.moandjiezana.toml.Toml;
-import static com.pawandubey.griffin.ConfigurationKeys.DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.EXCLUDE;
+import static com.pawandubey.griffin.ConfigurationKeys.IN_DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.OUTPUT_DIR;
+import static com.pawandubey.griffin.ConfigurationKeys.OUT_DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.PORT;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_AUTHOR;
 import static com.pawandubey.griffin.ConfigurationKeys.SITE_BASE_URL;
@@ -54,7 +55,8 @@ public class Configurator {
     private String sourceDir = "content";
     private String outputDir = "output";
     private List<String> excludeDirs;
-    private String dateFormat = "yyyy MM dd";
+    private String inputDateFormat = "yyyy MM dd";
+    private String outputDateFormat;
     private String theme = "wells";
     //private String template = ROOT_DIRECTORY + FILE_SEPARATOR + "assets" + FILE_SEPARATOR + "templates" + FILE_SEPARATOR + theme;
     private Integer port = 9090;
@@ -71,7 +73,8 @@ public class Configurator {
             sourceDir = toml.getString(SOURCE_DIR.key);
             outputDir = toml.getString(OUTPUT_DIR.key);
             excludeDirs = toml.getList(EXCLUDE.key);
-            dateFormat = toml.getString(DATE_FORMAT.key);
+            inputDateFormat = toml.getString(IN_DATE_FORMAT.key);
+            outputDateFormat = toml.getString(OUT_DATE_FORMAT.key);
             theme = toml.getString(THEME.key);
             port = Integer.valueOf(toml.getLong(PORT.key).toString());
             //template = ROOT_DIRECTORY + FILE_SEPARATOR + "assets" + FILE_SEPARATOR + "templates" + FILE_SEPARATOR + theme;
@@ -100,7 +103,7 @@ public class Configurator {
 //        return this;
 //    }
     protected Configurator withDateFormat(String format) {
-        dateFormat = format;
+        inputDateFormat = format;
         return this;
     }
 
@@ -132,7 +135,8 @@ public class Configurator {
                 .append(OUTPUT_DIR.key).append(" = ").append("\"").append(this.outputDir).append("\"").append("\n")
                 .append(EXCLUDE.key).append(" = ").append("[]").append("\n")
                 .append("\n\n#styling\n")
-                .append(DATE_FORMAT.key).append(" = ").append("\"").append(this.dateFormat).append("\"").append("\n")
+                .append(IN_DATE_FORMAT.key).append(" = ").append("\"").append(this.inputDateFormat).append("\"").append("\n")
+                .append(OUT_DATE_FORMAT.key).append(" = ").append("\"").append(this.outputDateFormat).append("\"").append("\n")
                 .append(THEME.key).append(" = ").append("\"").append(this.theme).append("\"").append("\n")
                 .append("\n\n#preview\n")
                 .append(PORT.key).append(" = ").append(this.port);
@@ -164,7 +168,7 @@ public class Configurator {
     public String getSiteAuthor() {
         return siteAuthor;
     }
-
+    ;
     /**
      * @return the siteBaseUrl
      */
@@ -194,10 +198,18 @@ public class Configurator {
     }
 
     /**
-     * @return the dateFormat
+     * @return the inputDateFormat
      */
-    public String getDateFormat() {
-        return dateFormat;
+    public String getInputDateFormat() {
+        return inputDateFormat;
+    }
+
+    /**
+     *
+     * @return the outputDateFormat
+     */
+    public String getOutputDateFormat() {
+        return outputDateFormat;
     }
 
     /**

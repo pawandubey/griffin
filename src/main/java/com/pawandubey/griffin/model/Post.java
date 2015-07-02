@@ -15,11 +15,13 @@
  */
 package com.pawandubey.griffin.model;
 
+import com.pawandubey.griffin.Data;
+import static com.pawandubey.griffin.Data.config;
 import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
-import static com.pawandubey.griffin.DirectoryCrawler.config;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class Post implements Parsable {
     private final String author;
     //String summary;
     private final LocalDate date;
+    private final String prettyDate;
     private final Path location;
     private String content;
     private final String slug;
@@ -58,6 +61,7 @@ public class Post implements Parsable {
         //TODO add summary option
         //this.summary = summ;
         date = dat;
+        prettyDate = date.format(DateTimeFormatter.ofPattern(config.getOutputDateFormat()));
         location = loc;
         content = cont;
         slug = slu;
@@ -87,6 +91,10 @@ public class Post implements Parsable {
     @Override
     public LocalDate getDate() {
         return date;
+    }
+
+    public String getPrettyDate() {
+        return prettyDate;
     }
 
     /**
@@ -134,7 +142,7 @@ public class Post implements Parsable {
     @Override
     public String getPermalink() {
         Path parentDir = Paths.get(SOURCE_DIRECTORY).relativize(location.getParent());
-        permalink = config.getSiteBaseUrl().concat("/").concat(parentDir.resolve(getSlug()).toString()).concat("/");
+        permalink = Data.config.getSiteBaseUrl().concat("/").concat(parentDir.resolve(getSlug()).toString()).concat("/");
         return permalink;
     }
 
