@@ -59,6 +59,7 @@ public class DirectoryCrawler {
     public static final String TAG_DIRECTORY = OUTPUT_DIRECTORY + FILE_SEPARATOR + "tags";
     private final StringBuilder header = new StringBuilder();
     private final Toml toml = new Toml();
+    public static boolean running = true;
 
     public DirectoryCrawler() {
 
@@ -130,7 +131,9 @@ public class DirectoryCrawler {
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                 return FileVisitResult.CONTINUE;
             }
-        });      
+        });
+
+        running = false;
     }
 
     //TODO refactor this method to make use of the above method someway.
@@ -190,6 +193,7 @@ public class DirectoryCrawler {
                 return FileVisitResult.CONTINUE;
             }
         });
+        running = false;
     }
 
     /**
