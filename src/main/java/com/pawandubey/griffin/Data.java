@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -32,8 +35,9 @@ public class Data {
     static final List<Parsable> navPages = new ArrayList<>();
     static final List<Parsable> latestPosts = new ArrayList<>();
     public static final Configurator config = new Configurator();
-    public static final Set<String> tags = new HashSet<>();
+    public static final ConcurrentMap<String, List<Parsable>> tags = new ConcurrentHashMap<>();
     public static final Data datum = new Data();
+    public static final Set<ExecutorService> executorSet = new HashSet<>();
 
     /**
      * @return the fileQueue

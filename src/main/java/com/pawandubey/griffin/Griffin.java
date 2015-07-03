@@ -127,6 +127,7 @@ public class Griffin {
         parser = new Parser();
         parser.parse(fileQueue);
         info.writeInfoFile();
+        parser.shutDownExecutors();
         long pe = System.currentTimeMillis();
         System.out.println("Crawl: " + (read - start));
         System.out.println("Parse: " + (pe - ps));
