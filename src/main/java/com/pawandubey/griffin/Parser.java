@@ -34,13 +34,16 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -86,7 +89,6 @@ public class Parser {
             p = collection.take();
             writeParsedFile(p);
             renderTags();
-            //System.out.println("Wrote file:" + p.getAuthor() + " " + p.getTitle() + "LINE_SEPARATOR" + p.getDate() + " " + p.getLocation());
         }
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"), StandardCharsets.UTF_8)) {
@@ -94,6 +96,89 @@ public class Parser {
             }
             catch (IOException ex) {
                 Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    //TODO Method doesnt fit on screen -> TOO LONG. Refactor.
+    /**
+     * Renders the posts of each tag as symbolic links. 
+     * This method calcualtes the number of threads needed based on the criteria
+     * that one thread will handle 10 tags. Then partitions the tags keyset into
+     * that many Lists of tags. Then each list is processed by a new thread in
+     * the executor service.
+     *
+     * @throws IOException the exception
+     */
+    protected void renderTags() throws IOException {
+        if (config.getRenderTags()) {
+            int numThreads = (tags.size() / 10) + 1;
+            ExecutorService tagExecutor = Executors.newFixedThreadPool(numThreads);
+            executorSet.add(tagExecutor);
+
+            Set<List<String>> parts = new HashSet<>();
+            for (int i = 0; i < numThreads; i++) {
+                parts.add(tags.keySet()
+                        .stream()
+                        .skip(i * 10)
+                        .limit(10)
+                        .collect(Collectors.toList()));
+            }
+
+            parts.stream().forEach(p
+                    -> {
+                        tagExecutor.submit(() -> {
+                            for (String t : p) {
+                                Path tagDir = Paths.get(TAG_DIRECTORY).resolve(t);
+
+                                if (Files.notExists(tagDir)) {
+                                    try {
+                                        Files.createDirectory(tagDir);
+                                    }
+                                    catch (IOException ex) {
+                                        Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+
+                        for (Parsable pa : tags.get(t)) {
+                            try {
+                                if (Files.notExists(tagDir.resolve(pa.getSlug()))) {
+                                    Files.createDirectory(tagDir.resolve(pa.getSlug()));
+                                }
+                                Path link = tagDir.resolve(pa.getSlug()).resolve("index.html");
+                                Path htmlPath = resolveHtmlPath(pa);
+                                if (Files.notExists(link, LinkOption.NOFOLLOW_LINKS)) {
+                                    Files.createSymbolicLink(link, htmlPath);
+                                }
+                            }
+                            catch (IOException ex) {
+                                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                });
+                    });
+        }
+    }
+
+    /**
+     * Shuts down all executors in the executorSet one by one gracefully.
+     */
+    protected void shutDownExecutors() {
+        for (ExecutorService e : executorSet) {
+            try {
+                e.shutdown();
+                e.awaitTermination(2, TimeUnit.SECONDS);
+
+            }
+            catch (InterruptedException ex) {
+                Logger.getLogger(Parser.class
+                        .getName()).log(Level.WARNING, null, ex);
+            }
+            finally {
+                if (!e.isTerminated()) {
+                    e.shutdownNow();
+                }
             }
         }
     }
@@ -110,10 +195,12 @@ public class Parser {
         try (BufferedReader br = Files.newBufferedReader(p, StandardCharsets.UTF_8)) {
             while ((line = br.readLine()) != null) {
                 sb.append(line).append(LINE_SEPARATOR);
+
             }
         }
         catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Parser.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return sb.toString();
     }
@@ -132,9 +219,11 @@ public class Parser {
             parsedContent = Processor.process(p.getContent(), renderConfig);
             p.setContent(parsedContent);
             bw.write(renderer.renderParsable(p));
+
         }
         catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Parser.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         if (config.getRenderTags()) {
             resolveTags(p, htmlPath);
@@ -168,56 +257,4 @@ public class Parser {
         }
     }
 
-    protected void renderTags() throws IOException {
-        if (config.getRenderTags()) {
-            ExecutorService tagExecutor = Executors.newFixedThreadPool(tags.size());
-            executorSet.add(tagExecutor);
-            tags.keySet().stream().forEach((String t) -> {
-                tagExecutor.submit(() -> {
-                    Path tagDir = Paths.get(TAG_DIRECTORY).resolve(t);
-                    if (Files.notExists(tagDir)) {
-                        try {
-                            Files.createDirectory(tagDir);
-                        }
-                        catch (IOException ex) {
-                            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    for (Parsable pa : tags.get(t)) {
-                        try {
-                            if (Files.notExists(tagDir.resolve(pa.getSlug()))) {
-                                Files.createDirectory(tagDir.resolve(pa.getSlug()));
-                            }
-                            Path link = tagDir.resolve(pa.getSlug()).resolve("index.html");
-                            Path htmlPath = resolveHtmlPath(pa);
-                            if (Files.notExists(link, LinkOption.NOFOLLOW_LINKS)) {
-                                Files.createSymbolicLink(link, htmlPath);
-                            }
-                        }
-                        catch (IOException ex) {
-                            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                });
-            }
-            );
-        }
-    }
-
-    protected void shutDownExecutors() {
-        for (ExecutorService e : executorSet) {
-            try {
-                e.shutdown();
-                e.awaitTermination(2, TimeUnit.SECONDS);
-            }
-            catch (InterruptedException ex) {
-                Logger.getLogger(Parser.class.getName()).log(Level.WARNING, null, ex);
-            }
-            finally {
-                if (!e.isTerminated()) {
-                    e.shutdownNow();
-                }
-            }
-        }
-    }
 }
