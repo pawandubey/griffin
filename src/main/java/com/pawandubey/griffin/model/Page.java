@@ -30,7 +30,7 @@ public class Page implements Parsable {
 
     private final String title;
     private final String author;
-    private final Path location;
+    private final String location;
     private String content;
     private final String slug;
     private final String layout;
@@ -51,7 +51,7 @@ public class Page implements Parsable {
     public Page(String titl, String auth, Path loc, String cont, String slu, String lay, List<String> tag) {
         author = auth;
         title = titl;
-        location = loc;
+        location = loc.toString();
         content = cont;
         slug = slu;
         layout = lay;
@@ -79,7 +79,7 @@ public class Page implements Parsable {
      */
     @Override
     public Path getLocation() {
-        return location;
+        return Paths.get(location);
     }
 
     /**
@@ -124,7 +124,7 @@ public class Page implements Parsable {
      */
     @Override
     public String getPermalink() {
-        Path parentDir = Paths.get(SOURCE_DIRECTORY).relativize(location.getParent());
+        Path parentDir = Paths.get(SOURCE_DIRECTORY).relativize(Paths.get(location).getParent());
         permalink = Data.config.getSiteBaseUrl().concat("/").concat(parentDir.resolve(getSlug()).toString()).concat("/");
         return permalink;
     }
@@ -148,4 +148,19 @@ public class Page implements Parsable {
         return tags;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Parsable)) {
+            return false;
+        }
+        Parsable p = (Parsable) o;
+        return p.getSlug().equals(this.getSlug());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + this.slug.hashCode();
+        return hash;
+    }
 }

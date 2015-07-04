@@ -35,7 +35,7 @@ public class Post implements Parsable {
     //String summary;
     private final LocalDate date;
     private final String prettyDate;
-    private final Path location;
+    private final String location;
     private String content;
     private final String slug;
     private final String layout;
@@ -62,7 +62,7 @@ public class Post implements Parsable {
         //this.summary = summ;
         date = dat;
         prettyDate = date.format(DateTimeFormatter.ofPattern(config.getOutputDateFormat()));
-        location = loc;
+        location = loc.toString();
         content = cont;
         slug = slu;
         layout = lay;
@@ -102,7 +102,7 @@ public class Post implements Parsable {
      */
     @Override
     public Path getLocation() {
-        return location;
+        return Paths.get(location);
     }
 
     /**
@@ -141,7 +141,7 @@ public class Post implements Parsable {
      */
     @Override
     public String getPermalink() {
-        Path parentDir = Paths.get(SOURCE_DIRECTORY).relativize(location.getParent());
+        Path parentDir = Paths.get(SOURCE_DIRECTORY).relativize(Paths.get(location).getParent());
         permalink = Data.config.getSiteBaseUrl().concat("/").concat(parentDir.resolve(getSlug()).toString()).concat("/");
         return permalink;
     }
@@ -162,6 +162,22 @@ public class Post implements Parsable {
     @Override
     public List<String> getTags() {
         return tags;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Parsable)) {
+            return false;
+        }
+        Parsable p = (Parsable) o;
+        return p.getSlug().equals(this.getSlug());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + this.slug.hashCode();
+        return hash;
     }
 
 }

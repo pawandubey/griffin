@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin.model;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,7 +26,8 @@ import java.util.List;
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public interface Parsable {
+public interface Parsable extends Serializable {
+
     public String getContent();
 
     public void setContent(String content);
