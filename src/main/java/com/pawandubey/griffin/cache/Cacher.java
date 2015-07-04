@@ -35,6 +35,10 @@ public class Cacher {
     public static final String CACHE_PATH = ROOT_DIRECTORY + FILE_SEPARATOR + "cache.db";
     public final DB db;
 
+    /**
+     * Creates a new Cacher with a file database in the ROOT_FOLDER with
+     * asyncWriteEnabled and transactionDisabled with JVM shutdown hook.
+     */
     public Cacher() {
         db = DBMaker.newFileDB(new File(CACHE_PATH))
                 .asyncWriteEnable()
@@ -43,27 +47,42 @@ public class Cacher {
                 .mmapFileEnableIfSupported()
                 .make();
     }
-
+    /**
+     * Creates a cache of everything other than the fileQueue.
+     */
     public void cacheEverythingElse() {
         ConcurrentMap<String, Object> mainMap = db.getHashMap("mainMap");
         //System.out.println(tags.values().stream().flatMap(p -> p.stream()).map(p -> p.getLocation()).collect(Collectors.toList()));
         mainMap.put("tags", tags);
         mainMap.put("navPages", navPages);
         mainMap.put("latestPosts", latestPosts);
-//        ConcurrentMap<String, List<Parsable>> t = (ConcurrentMap<String, List<Parsable>>) mainMap.get("tags");
-//        System.out.println(t.values().stream().flatMap(p -> p.stream()).map(p -> p.getLocation()).collect(Collectors.toList()));
         db.commit();
     }
 
+    /**
+     * Caches the fileQueue before it goes for parsing.
+     */
     public void cacheFileQueue() {
         ConcurrentMap<String, Object> mainMap = db.getHashMap("mainMap");
         mainMap.put("fileQueue", fileQueue);
     }
 
+    /**
+     * Fetches and returns the map from the cache.
+     *
+     * @return the cached map.
+     */
     public ConcurrentMap<String, Object> readFromCacheIfExists() {
         return db.getHashMap("mainMap");
     }
 
+    /**
+     * Checks if the cache exists by checking if the map contains any elements.
+     * This is necessary because the getHashMap method creates a new map if not
+     * present instead of returning null.
+     *
+     * @return the HashMap
+     */
     public boolean cacheExists() {
         return !db.getHashMap("mainMap").isEmpty();
     }

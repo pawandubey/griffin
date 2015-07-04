@@ -132,32 +132,35 @@ public class Griffin {
             BlockingQueue<Parsable> qu = (BlockingQueue<Parsable>) map.get("fileQueue");
             Data.fileQueue.addAll(qu);
             Data.tags.putAll(tag);
-            Data.latestPosts.addAll(latest);
-            Data.navPages.addAll(nav);            
+//            Data.latestPosts.addAll(latest);
+//            Data.navPages.addAll(nav);
             int st = Data.fileQueue.size();
             System.out.println("Read " + st + " objects from the cache. Woohooo!!");
             crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
         }
         else {            
-            if (fastParse == true) {
+            if (!rebuild) {
                 crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
             }
             else {
+                System.out.println("Rebuilding site from scratch...");
                 crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
-            }
+            }          
             
-            info.findLatestPosts(fileQueue);
-            info.findNavigationPages(fileQueue);
             
         }        
+        //System.out.println(fileQueue);
+        info.findLatestPosts(fileQueue);
+        info.findNavigationPages(fileQueue);
         cacher.cacheFileQueue();
         System.out.println("Parsing " + Data.fileQueue.size() + " objects...");
+        
         parser = new Parser();
         parser.parse(fileQueue);
         info.writeInfoFile();
         parser.shutDownExecutors();
         cacher.cacheEverythingElse();
-        long pe = System.currentTimeMillis();
+        
         long end = System.currentTimeMillis();
         System.out.println("Time (hardly) taken: " + (end - start) + " ms");
     }
@@ -205,19 +208,19 @@ public class Griffin {
         showWelcomeMessage(path, name);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-        System.out.println("1. What would you like to call your site?Data.(" + config.getSiteName() + "):");
+        System.out.println("1. What would you like to call your site?(" + config.getSiteName() + "):");
         nam = br.readLine();
         System.out.println("2. Who's authoring this site?");
         auth = br.readLine();
-        System.out.println("3. What will be the tagline for the Data.site?(" + config.getSiteTagline() + "):");
+        System.out.println("3. What will be the tagline for the site?(" + config.getSiteTagline() + "):");
         tag = br.readLine();
-        System.out.println("4. What will you like to name the folder where your posts will Data.be stored?(" + config.getSourceDir() + "):");
+        System.out.println("4. What will you like to name the folder where your posts will be stored?(" + config.getSourceDir() + "):");
         src = br.readLine();
-        System.out.println("5. What will you like to name the folder where the generated site Data.will be stored?(" + config.getOutputDir() + "):");
+        System.out.println("5. What will you like to name the folder where the generated site will be stored?(" + config.getOutputDir() + "):");
         out = br.readLine();
         System.out.println("6. What will you like to format the dates on yourData. posts and pages as?(" + config.getInputDateFormat() + "):");
         date = br.readLine();
-        System.out.println("7. On what port will you like to see the lData.ive preview of your site?(" + config.getPort() + "):");
+        System.out.println("7. On what port will you like to see the live preview of your site?(" + config.getPort() + "):");
         port = br.readLine();
         finalizeConfigurationSettings(nam, auth, tag, src, out, date, port);
     }

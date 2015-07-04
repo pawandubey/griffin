@@ -136,6 +136,7 @@ public class Parser {
                                     if (lock.tryLock()) {
 
                                         try {
+                                            if (Files.notExists(tagDir))
                                             Files.createDirectory(tagDir);
                                         }
                                         catch (IOException ex) {

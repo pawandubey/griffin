@@ -131,12 +131,12 @@ public class Configurator {
 
     protected void writeConfig(Path path) throws IOException {
         String conf = "#parsing details" + LINE_SEPARATOR
-                      + "source = \"src\"" + LINE_SEPARATOR
-                      + "output = \"output\"" + LINE_SEPARATOR
+                      + "source = \"" + sourceDir + "\"" + LINE_SEPARATOR
+                      + "output = \"" + outputDir + "\"" + LINE_SEPARATOR
                       + "exclude = []" + LINE_SEPARATOR
                       + "" + LINE_SEPARATOR
                       + "#styling" + LINE_SEPARATOR
-                      + "inputdate = \"yyyy MM dd\"" + LINE_SEPARATOR
+                      + "inputdate = \"" + inputDateFormat + "\"" + LINE_SEPARATOR
                       + "outputdate = \"MMM d yyyy\"" + LINE_SEPARATOR
                       + "theme = \"hyde\"" + LINE_SEPARATOR
                       + "" + LINE_SEPARATOR
@@ -144,7 +144,7 @@ public class Configurator {
                       + "rendertags = false" + LINE_SEPARATOR
                       + "" + LINE_SEPARATOR
                       + "#preview" + LINE_SEPARATOR
-                      + "port = 9090" + LINE_SEPARATOR
+                      + "port = " + port + LINE_SEPARATOR
                       + "" + LINE_SEPARATOR
                       + "#social media details" + LINE_SEPARATOR
                       + "[social]" + LINE_SEPARATOR
@@ -157,26 +157,10 @@ public class Configurator {
                       + "" + LINE_SEPARATOR
                       + "#site details" + LINE_SEPARATOR
                       + "[site]" + LINE_SEPARATOR
-                      + "	name = \"Perf\"" + LINE_SEPARATOR
-                      + "	tagline = \"Faster\"" + LINE_SEPARATOR
-                      + "	author = \"Pawan Dubey\"" + LINE_SEPARATOR
-                      + "	baseurl = \"http://localhost:9090\"";
-//        StringBuilder initialConfig = new StringBuilder();
-//        initialConfig.append("#site details"+LINE_SEPARATOR)
-//                .append(SITE_NAME.key).append(" = ").append("\"").append(this.siteName).append("\"").append(""+LINE_SEPARATOR)
-//                .append(SITE_TAGLINE.key).append(" = ").append("\"").append(this.siteTagline).append("\"").append(""+LINE_SEPARATOR)
-//                .append(SITE_AUTHOR.key).append(" = ").append("\"").append(this.siteAuthor).append("\"").append(""+LINE_SEPARATOR)
-//                .append(SITE_BASE_URL.key).append(" = ").append("\"").append(this.siteBaseUrl).append("\"").append(""+LINE_SEPARATOR)
-//                .append("\n\n#parsing details"+LINE_SEPARATOR)
-//                .append(SOURCE_DIR.key).append(" = ").append("\"").append(this.sourceDir).append("\"").append(""+LINE_SEPARATOR)
-//                .append(OUTPUT_DIR.key).append(" = ").append("\"").append(this.outputDir).append("\"").append(""+LINE_SEPARATOR)
-//                .append(EXCLUDE.key).append(" = ").append("[]").append(""+LINE_SEPARATOR)
-//                .append("\n\n#styling"+LINE_SEPARATOR)
-//                .append(IN_DATE_FORMAT.key).append(" = ").append("\"").append(this.inputDateFormat).append("\"").append(""+LINE_SEPARATOR)
-//                .append(OUT_DATE_FORMAT.key).append(" = ").append("\"").append(this.outputDateFormat).append("\"").append(""+LINE_SEPARATOR)
-//                .append(THEME.key).append(" = ").append("\"").append(this.theme).append("\"").append(""+LINE_SEPARATOR)
-//                .append("\n\n#preview"+LINE_SEPARATOR)
-//                .append(PORT.key).append(" = ").append(this.port);
+                      + "	name = \"" + siteName + "\"" + LINE_SEPARATOR
+                      + "	tagline = \"" + siteTagline + "\"" + LINE_SEPARATOR
+                      + "	author = \"" + siteAuthor + "\"" + LINE_SEPARATOR
+                      + "	baseurl = \"http://localhost:" + port + "\"";
 
         try (BufferedWriter br = Files.newBufferedWriter(path.resolve("config.toml"), StandardOpenOption.TRUNCATE_EXISTING)) {
             br.write(conf.trim());

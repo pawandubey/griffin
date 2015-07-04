@@ -83,6 +83,7 @@ public class DirectoryCrawler {
      * @throws IOException the exception
      */
     protected void readIntoQueue(Path rootPath) throws IOException, InterruptedException {
+        
         cleanOutputDirectory();
         copyAssets();
         
@@ -104,8 +105,9 @@ public class DirectoryCrawler {
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
 
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
+                        
                         Parsable parsable = createParsable(file);
-                        Data.fileQueue.put(parsable);
+                        Data.fileQueue.put(parsable);                        
                     }
                     else {
                         Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
