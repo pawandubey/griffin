@@ -34,9 +34,9 @@ public class PublishCommand implements GriffinCommand {
     @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
     private boolean help = false;
 
-    @Option(name = "--quick", aliases = {"-q"}, handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification"
+    @Option(name = "--quick", aliases = {"-q"}, handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification."
     )
-    private Boolean fastParse = false;
+    private Boolean fastParse = true;
 
     @Option(name = "--rebuild", aliases = {"-r"}, handler = BooleanOptionHandler.class, usage = "Rebuild the site from scratch. This may take time for more number of posts.")
     private Boolean rebuild = false;

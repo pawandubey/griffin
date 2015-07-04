@@ -115,14 +115,16 @@ public class Griffin {
      * true.
      *
      * @param fastParse Do a fast incremental parse
+     * @param rebuild Do force a full rebuild
      * @throws IOException the exception
      * @throws InterruptedException the exception
      */
     public void publish(boolean fastParse, boolean rebuild) throws IOException, InterruptedException {
+        long start = System.currentTimeMillis();
         InfoHandler info = new InfoHandler();
         if (cacher.cacheExists() && !rebuild) {
             System.out.println("Reading from the cache for your pleasure...");
-            long start = System.currentTimeMillis();
+            
             ConcurrentMap<String, Object> map = cacher.readFromCacheIfExists();
             ConcurrentMap<String, List<Parsable>> tag = (ConcurrentMap<String, List<Parsable>>) map.get("tags");
             List<Parsable> nav = (List<Parsable>) map.get("navPages");
@@ -135,25 +137,19 @@ public class Griffin {
             int st = Data.fileQueue.size();
             System.out.println("Read " + st + " objects from the cache. Woohooo!!");
             crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
-            System.out.println("Found " + (Data.fileQueue.size() - st) + " new items after crawling.");
-            long read = System.currentTimeMillis();
-            System.out.println("Read from cache and crawled in: " + (read - start) + " ms");
         }
-        else {
-
-            long start = System.currentTimeMillis();
+        else {            
             if (fastParse == true) {
                 crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
             }
             else {
                 crawler.readIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
             }
-            long read = System.currentTimeMillis();
+            
             info.findLatestPosts(fileQueue);
             info.findNavigationPages(fileQueue);
-            System.out.println("Crawled in: " + (read - start) + " ms");
-        }
-        long ps = System.currentTimeMillis();
+            
+        }        
         cacher.cacheFileQueue();
         System.out.println("Parsing " + Data.fileQueue.size() + " objects...");
         parser = new Parser();
@@ -162,8 +158,8 @@ public class Griffin {
         parser.shutDownExecutors();
         cacher.cacheEverythingElse();
         long pe = System.currentTimeMillis();
-        
-        System.out.println("Parsed in: " + (pe - ps) + " ms");        
+        long end = System.currentTimeMillis();
+        System.out.println("Time (hardly) taken: " + (end - start) + " ms");
     }
 
     /**

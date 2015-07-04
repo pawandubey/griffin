@@ -83,13 +83,9 @@ public class DirectoryCrawler {
      * @throws IOException the exception
      */
     protected void readIntoQueue(Path rootPath) throws IOException, InterruptedException {
-        long start = System.currentTimeMillis();
         cleanOutputDirectory();
-        long enddel = System.currentTimeMillis();
         copyAssets();
-        long endcop = System.currentTimeMillis();
-        System.out.println("Deletion: " + (enddel - start));
-        System.out.println("Copy: " + (endcop - enddel));
+        
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
@@ -239,6 +235,7 @@ public class DirectoryCrawler {
      * @throws IOException When a file visit goes wrong
      */
     private void cleanOutputDirectory() throws IOException, InterruptedException {
+        System.out.println("Cleaning up the output area...");
         Path pathToClean = Paths.get(OUTPUT_DIRECTORY).toAbsolutePath().normalize();
 //
 //        ProcessBuilder pb = new ProcessBuilder("rm", "-r", OUTPUT_DIRECTORY);
@@ -267,6 +264,7 @@ public class DirectoryCrawler {
         });
 
         Files.createDirectory(pathToClean);
+        System.out.println("Cleanup done.");
     }
 
     /**
@@ -276,6 +274,7 @@ public class DirectoryCrawler {
      * @throws IOException the exception
      */
     private void copyAssets() throws IOException {
+        System.out.println("Carefully copying the assests...");
         Path assetsPath = Paths.get(templateRoot, "assets");
         Path outputAssetsPath = Paths.get(OUTPUT_DIRECTORY, "assets");
         if (Files.notExists(outputAssetsPath)) {
@@ -303,5 +302,7 @@ public class DirectoryCrawler {
             }
 
         });
+
+        System.out.println("Copying done.");
     }
 }

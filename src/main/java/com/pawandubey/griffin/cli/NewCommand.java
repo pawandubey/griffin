@@ -35,7 +35,7 @@ import org.kohsuke.args4j.spi.BooleanOptionHandler;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class NewCommand implements GriffinCommand {
-    @Argument(usage = "creates a new skeleton site at the given path", metaVar = "<file>")
+    @Argument(usage = "creates a new skeleton site at the given path", metaVar = "<path>")
     public List<String> args = new ArrayList<>();//
 
     Path filePath;
