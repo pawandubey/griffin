@@ -41,6 +41,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -82,7 +84,7 @@ public class Parser {
     protected void parse(BlockingQueue<Parsable> collection) throws InterruptedException, IOException {
         Parsable p;
         String content;
-        if (config.getRenderTags()) {
+        if (config.getRenderTags() && Files.notExists(Paths.get(TAG_DIRECTORY))) {
             Files.createDirectory(Paths.get(TAG_DIRECTORY));
         }
         while (!collection.isEmpty()) {
@@ -102,11 +104,11 @@ public class Parser {
 
     //TODO Method doesnt fit on screen -> TOO LONG. Refactor.
     /**
-     * Renders the posts of each tag as symbolic links. 
-     * This method calcualtes the number of threads needed based on the criteria
-     * that one thread will handle 10 tags. Then partitions the tags keyset into
-     * that many Lists of tags. Then each list is processed by a new thread in
-     * the executor service.
+     * Renders the posts of each tag as symbolic links. This method calcualtes
+     * the number of threads needed based on the criteria that one thread will
+     * handle 10 tags. Then partitions the tags keyset into that many Lists of
+     * tags. Then each list is processed by a new thread in the executor
+     * service.
      *
      * @throws IOException the exception
      */
@@ -124,19 +126,24 @@ public class Parser {
                         .limit(10)
                         .collect(Collectors.toList()));
             }
-
+            Lock lock = new ReentrantLock();
             parts.stream().forEach(p
                     -> {
                         tagExecutor.submit(() -> {
                             for (String t : p) {
                                 Path tagDir = Paths.get(TAG_DIRECTORY).resolve(t);
-
                                 if (Files.notExists(tagDir)) {
-                                    try {
-                                        Files.createDirectory(tagDir);
-                                    }
-                                    catch (IOException ex) {
-                                        Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                                    if (lock.tryLock()) {
+
+                                        try {
+                                            Files.createDirectory(tagDir);
+                                        }
+                                        catch (IOException ex) {
+                                            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                        finally {
+                                            lock.unlock();
+                                        }
                                     }
                                 }
 

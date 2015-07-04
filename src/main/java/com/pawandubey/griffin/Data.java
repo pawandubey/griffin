@@ -31,9 +31,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public class Data {
-    static final LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
-    static final List<Parsable> navPages = new ArrayList<>();
-    static final List<Parsable> latestPosts = new ArrayList<>();
+    public static final LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
+    public static final List<Parsable> navPages = new ArrayList<>();
+    public static final List<Parsable> latestPosts = new ArrayList<>();
     public static final Configurator config = new Configurator();
     public static final ConcurrentMap<String, List<Parsable>> tags = new ConcurrentHashMap<>();
     public static final Data datum = new Data();

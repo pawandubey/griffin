@@ -38,6 +38,9 @@ public class PublishCommand implements GriffinCommand {
     )
     private Boolean fastParse = false;
 
+    @Option(name = "--rebuild", aliases = {"-r"}, handler = BooleanOptionHandler.class, usage = "Rebuild the site from scratch. This may take time for more number of posts.")
+    private Boolean rebuild = false;
+
     public PublishCommand() throws InterruptedException, IOException {
 
     }
@@ -58,7 +61,8 @@ public class PublishCommand implements GriffinCommand {
         try {
             Griffin griffin = new Griffin();
             griffin.printAsciiGriffin();
-            griffin.publish(fastParse);
+            griffin.publish(fastParse, rebuild);
+            System.out.println("All done for now! I will be bach!");
         }
         catch (IOException | InterruptedException ex) {
             Logger.getLogger(PublishCommand.class.getName()).log(Level.SEVERE, null, ex);

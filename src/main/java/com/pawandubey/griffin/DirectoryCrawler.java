@@ -59,7 +59,7 @@ public class DirectoryCrawler {
     public static final String TAG_DIRECTORY = OUTPUT_DIRECTORY + FILE_SEPARATOR + "tags";
     private final StringBuilder header = new StringBuilder();
     private final Toml toml = new Toml();
-    public static boolean running = true;
+    
 
     public DirectoryCrawler() {
 
@@ -132,8 +132,6 @@ public class DirectoryCrawler {
                 return FileVisitResult.CONTINUE;
             }
         });
-
-        running = false;
     }
 
     //TODO refactor this method to make use of the above method someway.
@@ -144,8 +142,8 @@ public class DirectoryCrawler {
      * @param rootPath
      * @throws IOException the exception
      */
-    protected void fastReadIntoQueue(Path rootPath) throws IOException {
-
+    protected void fastReadIntoQueue(Path rootPath) throws IOException, InterruptedException {
+        cleanOutputDirectory();
         copyAssets();
 
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
@@ -162,7 +160,7 @@ public class DirectoryCrawler {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                try {
+                try {                    
                     LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
                     LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
@@ -193,7 +191,6 @@ public class DirectoryCrawler {
                 return FileVisitResult.CONTINUE;
             }
         });
-        running = false;
     }
 
     /**
