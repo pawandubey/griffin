@@ -28,13 +28,17 @@ import java.util.List;
  */
 public class Page implements Parsable {
 
+    public static final long serialVersionUID = 1L;
+
     private final String title;
     private final String author;
     private final String location;
     private String content;
+    private final String excerpt;
     private final String slug;
     private final String layout;
     private String permalink;
+    private final String featuredImage;
     private final List<String> tags;
 
     /**
@@ -44,18 +48,23 @@ public class Page implements Parsable {
      * @param auth
      * @param loc
      * @param cont
+     * @param exc
+     * @param img
      * @param slu
      * @param lay
      * @param tag
      */
-    public Page(String titl, String auth, Path loc, String cont, String slu, String lay, List<String> tag) {
+    public Page(String titl, String auth, Path loc, String cont, String exc,
+                String img, String slu, String lay, List<String> tag) {
         author = auth;
         title = titl;
         location = loc.toString();
         content = cont;
+        excerpt = exc;
         slug = slu;
         layout = lay;
         tags = tag;
+        featuredImage = img;
     }
 
     /**
@@ -148,6 +157,24 @@ public class Page implements Parsable {
         return tags;
     }
 
+    /**
+     *
+     * @return the excerpt
+     */
+    @Override
+    public String getExcerpt() {
+        return excerpt;
+    }
+
+    /**
+     *
+     * @return the featured image, if exists, for this post.
+     */
+    @Override
+    public Path getFeaturedImage() {
+        return featuredImage != null ? Paths.get(featuredImage).toAbsolutePath().normalize() : null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Parsable)) {
@@ -160,7 +187,7 @@ public class Page implements Parsable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 47 * hash + this.slug.hashCode();
+        hash = 47 * hash + this.getSlug().hashCode();
         return hash;
     }
 }

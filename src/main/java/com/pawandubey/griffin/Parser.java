@@ -56,6 +56,7 @@ public class Parser {
     private final Configuration renderConfig;
     private final Renderer renderer;
     private String parsedContent;
+    private Lock lock = new ReentrantLock();
 
     /**
      * creates a parser with configuration set to enable safe mode HTML with
@@ -126,7 +127,7 @@ public class Parser {
                         .limit(10)
                         .collect(Collectors.toList()));
             }
-            Lock lock = new ReentrantLock();
+
             parts.stream().forEach(p
                     -> {
                         tagExecutor.submit(() -> {
@@ -136,31 +137,42 @@ public class Parser {
                                     if (lock.tryLock()) {
 
                                         try {
-                                            if (Files.notExists(tagDir))
-                                            Files.createDirectory(tagDir);
+                                            if (Files.notExists(tagDir)) {
+                                                Files.createDirectory(tagDir);
+                                            }
+
+                                            for (Parsable pa : tags.get(t)) {
+                                                Path resolvedTagDir = tagDir.resolve(pa.getSlug());
+//                                                if (Files.notExists(resolvedTagDir)) {
+//                                                    lock.lock();
+                                                try {
+
+                                                    if (Files.notExists(resolvedTagDir)) {
+                                                        Files.createDirectory(resolvedTagDir);
+                                                    }
+                                                    Path link = resolvedTagDir.resolve("index.html");
+                                                    Path htmlPath = resolveHtmlPath(pa);
+                                                    if (Files.notExists(link, LinkOption.NOFOLLOW_LINKS)) {
+                                                        Files.createSymbolicLink(link, htmlPath);
+                                                    }
+                                                }
+                                                catch (IOException ex) {
+                                                    Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                                                }
+//                                                    finally {
+//                                                        lock.unlock();
+//                                                    }
+
+                                            }
+
                                         }
+
                                         catch (IOException ex) {
                                             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
                                         }
                                         finally {
                                             lock.unlock();
                                         }
-                                    }
-                                }
-
-                        for (Parsable pa : tags.get(t)) {
-                            try {
-                                if (Files.notExists(tagDir.resolve(pa.getSlug()))) {
-                                    Files.createDirectory(tagDir.resolve(pa.getSlug()));
-                                }
-                                Path link = tagDir.resolve(pa.getSlug()).resolve("index.html");
-                                Path htmlPath = resolveHtmlPath(pa);
-                                if (Files.notExists(link, LinkOption.NOFOLLOW_LINKS)) {
-                                    Files.createSymbolicLink(link, htmlPath);
-                                }
-                            }
-                            catch (IOException ex) {
-                                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }
@@ -247,6 +259,7 @@ public class Parser {
         }
         Path htmlPath = parsedDir.resolve("index.html");
         return htmlPath;
+
     }
 
     private void resolveTags(Parsable p, Path htmlPath) throws IOException {

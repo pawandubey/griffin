@@ -16,8 +16,6 @@
 package com.pawandubey.griffin.cache;
 
 import static com.pawandubey.griffin.Data.fileQueue;
-import static com.pawandubey.griffin.Data.latestPosts;
-import static com.pawandubey.griffin.Data.navPages;
 import static com.pawandubey.griffin.Data.tags;
 import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
 import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIRECTORY;
@@ -47,15 +45,13 @@ public class Cacher {
                 .mmapFileEnableIfSupported()
                 .make();
     }
+
     /**
      * Creates a cache of everything other than the fileQueue.
      */
-    public void cacheEverythingElse() {
+    public void cacheTaggedParsables() {
         ConcurrentMap<String, Object> mainMap = db.getHashMap("mainMap");
-        //System.out.println(tags.values().stream().flatMap(p -> p.stream()).map(p -> p.getLocation()).collect(Collectors.toList()));
         mainMap.put("tags", tags);
-        mainMap.put("navPages", navPages);
-        mainMap.put("latestPosts", latestPosts);
         db.commit();
     }
 

@@ -17,6 +17,7 @@ package com.pawandubey.griffin;
 
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.griffin.ConfigurationKeys.EXCLUDE;
+import static com.pawandubey.griffin.ConfigurationKeys.IMAGE;
 import static com.pawandubey.griffin.ConfigurationKeys.IN_DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.OUTPUT_DIR;
 import static com.pawandubey.griffin.ConfigurationKeys.OUT_DATE_FORMAT;
@@ -63,6 +64,7 @@ public class Configurator {
     private String theme = "wells";
     private Integer port = 9090;
     private Social social;
+    private String headerImage;
     private boolean renderTags = false;
     public static final String LINE_SEPARATOR = System.lineSeparator();
 
@@ -85,6 +87,7 @@ public class Configurator {
             Map<String, Object> socialLinks = toml.getTable(SOCIAL.key).to(Map.class);
             social = new Social(socialLinks);
             renderTags = toml.getBoolean(RENDER_TAGS.key);
+            headerImage = toml.getString(IMAGE.key);
         }
         this.siteBaseUrl = "http://localhost:" + port;
     }
@@ -104,11 +107,6 @@ public class Configurator {
         return this;
     }
 
-    //TODO: implement this elegantly
-//    protected Configurator withSiteBaseUrl(String name){
-//        siteName = name;
-//        return this;
-//    }
     protected Configurator withDateFormat(String format) {
         inputDateFormat = format;
         return this;
@@ -139,6 +137,7 @@ public class Configurator {
                       + "inputdate = \"" + inputDateFormat + "\"" + LINE_SEPARATOR
                       + "outputdate = \"MMM d yyyy\"" + LINE_SEPARATOR
                       + "theme = \"hyde\"" + LINE_SEPARATOR
+                      + "headerimage = \"\""
                       + "" + LINE_SEPARATOR
                       + "#render files as per tags?" + LINE_SEPARATOR
                       + "rendertags = false" + LINE_SEPARATOR
@@ -256,8 +255,20 @@ public class Configurator {
         return social;
     }
 
+    /**
+     *
+     * @return whether to render tags
+     */
     public boolean getRenderTags() {
         return renderTags;
+    }
+
+    /**
+     *
+     * @return the String containing the path to the header image for the site.
+     */
+    public String getHeaderImage() {
+        return headerImage;
     }
 
     /**

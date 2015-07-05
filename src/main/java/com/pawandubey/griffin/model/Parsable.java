@@ -32,7 +32,11 @@ public interface Parsable extends Serializable {
 
     public void setContent(String content);
 
+    public String getExcerpt();
+
     public String getAuthor();
+
+    public Path getFeaturedImage();
 
     public String getTitle();
 

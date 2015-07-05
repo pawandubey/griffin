@@ -127,19 +127,16 @@ public class Griffin {
             
             ConcurrentMap<String, Object> map = cacher.readFromCacheIfExists();
             ConcurrentMap<String, List<Parsable>> tag = (ConcurrentMap<String, List<Parsable>>) map.get("tags");
-            List<Parsable> nav = (List<Parsable>) map.get("navPages");
-            List<Parsable> latest = (List<Parsable>) map.get("latestPosts");
             BlockingQueue<Parsable> qu = (BlockingQueue<Parsable>) map.get("fileQueue");
             Data.fileQueue.addAll(qu);
             Data.tags.putAll(tag);
-//            Data.latestPosts.addAll(latest);
-//            Data.navPages.addAll(nav);
             int st = Data.fileQueue.size();
             System.out.println("Read " + st + " objects from the cache. Woohooo!!");
             crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
+            System.out.println("Found " + (Data.fileQueue.size() - st) + " new objects!");
         }
         else {            
-            if (!rebuild) {
+            if (fastParse && !rebuild) {
                 crawler.fastReadIntoQueue(Paths.get(DirectoryCrawler.SOURCE_DIRECTORY).normalize());
             }
             else {
@@ -149,7 +146,6 @@ public class Griffin {
             
             
         }        
-        //System.out.println(fileQueue);
         info.findLatestPosts(fileQueue);
         info.findNavigationPages(fileQueue);
         cacher.cacheFileQueue();
@@ -159,7 +155,7 @@ public class Griffin {
         parser.parse(fileQueue);
         info.writeInfoFile();
         parser.shutDownExecutors();
-        cacher.cacheEverythingElse();
+        cacher.cacheTaggedParsables();
         
         long end = System.currentTimeMillis();
         System.out.println("Time (hardly) taken: " + (end - start) + " ms");

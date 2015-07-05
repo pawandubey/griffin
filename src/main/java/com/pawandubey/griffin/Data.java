@@ -16,7 +16,6 @@
 package com.pawandubey.griffin;
 
 import com.pawandubey.griffin.model.Parsable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,8 +31,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Data {
     public static final LinkedBlockingQueue<Parsable> fileQueue = new LinkedBlockingQueue<>();
-    public static final List<Parsable> navPages = new ArrayList<>();
-    public static final List<Parsable> latestPosts = new ArrayList<>();
+    public static final Set<Parsable> navPages = new HashSet<>();
+    public static final Set<Parsable> latestPosts = new HashSet<>();
     public static final Configurator config = new Configurator();
     public static final ConcurrentMap<String, List<Parsable>> tags = new ConcurrentHashMap<>();
     public static final Data datum = new Data();
@@ -49,14 +48,14 @@ public class Data {
     /**
      * @return the navPages
      */
-    public List<Parsable> getNavPages() {
+    public Set<Parsable> getNavPages() {
         return navPages;
     }
 
     /**
      * @return the latestPosts
      */
-    public List<Parsable> getLatestPosts() {
+    public Set<Parsable> getLatestPosts() {
         return latestPosts;
     }
 

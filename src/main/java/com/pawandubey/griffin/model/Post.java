@@ -30,9 +30,11 @@ import java.util.List;
  */
 public class Post implements Parsable {
 
+    public static final long serialVersionUID = 1L;
+
     private final String title;
     private final String author;
-    //String summary;
+    private final String excerpt;
     private final LocalDate date;
     private final String prettyDate;
     private final String location;
@@ -40,6 +42,7 @@ public class Post implements Parsable {
     private final String slug;
     private final String layout;
     private String permalink;
+    private final String featuredImage;
     private final List<String> tags;
 
     /**
@@ -50,16 +53,17 @@ public class Post implements Parsable {
      * @param dat the post date
      * @param loc the post's Path
      * @param cont the post's content
+     * @param exc the post's excerpt
+     * @param image
      * @param slu the post slug
      * @param lay the layout
      * @param tag the list of tags
-     */
+         */
     public Post(String titl, String auth, LocalDate dat,
-                Path loc, String cont, String slu, String lay, List<String> tag) {
+                Path loc, String cont, String exc, String image, String slu, String lay, List<String> tag) {
         title = titl;
         author = auth;
-        //TODO add summary option
-        //this.summary = summ;
+        excerpt = exc;
         date = dat;
         prettyDate = date.format(DateTimeFormatter.ofPattern(config.getOutputDateFormat()));
         location = loc.toString();
@@ -67,6 +71,7 @@ public class Post implements Parsable {
         slug = slu;
         layout = lay;
         tags = tag;
+        featuredImage = image;
     }
 
     /**
@@ -164,6 +169,25 @@ public class Post implements Parsable {
         return tags;
     }
 
+    /**
+     *
+     * @return the excerpt
+     */
+    @Override
+    public String getExcerpt() {
+        return excerpt;
+    }
+
+    /**
+     *
+     * @return the featured image, if exists, for this post.
+     */
+    @Override
+    public Path getFeaturedImage() {
+        return featuredImage != null ? Paths.get(featuredImage).toAbsolutePath().normalize() : null;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Parsable)) {
@@ -176,7 +200,7 @@ public class Post implements Parsable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 47 * hash + this.slug.hashCode();
+        hash = 47 * hash + this.getSlug().hashCode();
         return hash;
     }
 

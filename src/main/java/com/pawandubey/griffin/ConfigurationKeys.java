@@ -33,6 +33,7 @@ public enum ConfigurationKeys {
     IN_DATE_FORMAT("inputdate"),
     OUT_DATE_FORMAT("outputdate"),
     THEME("theme"),
+    IMAGE("headerimage"),
     PORT("port"),
     RENDER_TAGS("rendertags"),
     SOCIAL("social");

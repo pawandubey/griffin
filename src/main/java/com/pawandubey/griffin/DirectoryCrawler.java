@@ -59,7 +59,7 @@ public class DirectoryCrawler {
     public static final String TAG_DIRECTORY = OUTPUT_DIRECTORY + FILE_SEPARATOR + "tags";
     private final StringBuilder header = new StringBuilder();
     private final Toml toml = new Toml();
-    
+    public static final String EXCERPT_MARKER = "<!--more-->";
 
     public DirectoryCrawler() {
 
@@ -83,10 +83,10 @@ public class DirectoryCrawler {
      * @throws IOException the exception
      */
     protected void readIntoQueue(Path rootPath) throws IOException, InterruptedException {
-        
+
         cleanOutputDirectory();
         copyAssets();
-        
+
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
             @Override
@@ -105,9 +105,9 @@ public class DirectoryCrawler {
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
 
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
-                        
+
                         Parsable parsable = createParsable(file);
-                        Data.fileQueue.put(parsable);                        
+                        Data.fileQueue.put(parsable);
                     }
                     else {
                         Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
@@ -158,7 +158,7 @@ public class DirectoryCrawler {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                try {                    
+                try {
                     LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
                     LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
@@ -214,15 +214,30 @@ public class DirectoryCrawler {
             publishDate = LocalDate.parse(publishDate.format(DateTimeFormatter.ofPattern(config.getOutputDateFormat())), DateTimeFormatter.ofPattern(config.getOutputDateFormat()));
             String layout = toml.getString("layout");
             List<String> tag = toml.getList("tags");
+            String img = toml.getString("image");
+
+            String exc = null;
             StringBuilder content = new StringBuilder();
+            String[] halves;
             while ((line = br.readLine()) != null) {
+                if (line.contains(EXCERPT_MARKER)) {
+                    halves = line.split("<!--more-->");
+                    if (halves.length > 0) {
+                        exc = content.toString().concat(halves[0]);
+                    }
+                    content.append(String.join(" ", halves)).append(LINE_SEPARATOR);
+                    continue;
+                }
                 content.append(line).append(LINE_SEPARATOR);
             }
+            if (exc == null || exc.length() == 0) {
+                exc = content.substring(0, 255);
+            }
             if (layout.equals("post")) {
-                return new Post(title, author, publishDate, file, content.toString(), slug, layout, tag);
+                return new Post(title, author, publishDate, file, content.toString(), exc, img, slug, layout, tag);
             }
             else {
-                return new Page(title, author, file, content.toString(), slug, layout, tag);
+                return new Page(title, author, file, content.toString(), exc, img, slug, layout, tag);
             }
         }
         catch (IOException ex) {
@@ -239,10 +254,6 @@ public class DirectoryCrawler {
     private void cleanOutputDirectory() throws IOException, InterruptedException {
         System.out.println("Cleaning up the output area...");
         Path pathToClean = Paths.get(OUTPUT_DIRECTORY).toAbsolutePath().normalize();
-//
-//        ProcessBuilder pb = new ProcessBuilder("rm", "-r", OUTPUT_DIRECTORY);
-//        Process p = pb.start();
-//        p.waitFor();
 
         Files.walkFileTree(pathToClean, new SimpleFileVisitor<Path>() {
 
