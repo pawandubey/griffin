@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Encapsulates a single index page.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
@@ -32,6 +33,20 @@ public class SingleIndex {
     private final String nextPage;
     private List<Parsable> posts;
 
+    /**
+     * Creates a new index page with the current, previous and next index page
+     * locations. If the current page is the home page then there is no previous
+     * page. If the current page is the last page, then there is no next page,
+     * and if the current page is the 2nd page then the previous page is the
+     * home page. The last condition has to be handled because indexes are
+     * created with the path /pages/{pageNo} relative to the root. However this
+     * pattern is not followed for the first index page, which resides at the
+     * root.
+     *
+     * @param c the current page number
+     * @param p the previous page number
+     * @param n the next page number
+     */
     public SingleIndex(int c, int p, int n) {
         if (c == 1) {
             currentPage = config.getSiteBaseUrl();

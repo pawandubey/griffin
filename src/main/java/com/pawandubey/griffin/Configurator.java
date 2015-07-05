@@ -140,8 +140,8 @@ public class Configurator {
                       + "inputdate = \"" + inputDateFormat + "\"" + LINE_SEPARATOR
                       + "outputdate = \"MMM d yyyy\"" + LINE_SEPARATOR
                       + "theme = \"hyde\"" + LINE_SEPARATOR
-                      + "headerimage = \"\""
-                      + "postsperindex = 5"
+                      + "headerimage = \"\"" + LINE_SEPARATOR
+                      + "postsperindex = 5" + LINE_SEPARATOR
                       + "" + LINE_SEPARATOR
                       + "#render files as per tags?" + LINE_SEPARATOR
                       + "rendertags = false" + LINE_SEPARATOR

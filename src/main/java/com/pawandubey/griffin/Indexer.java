@@ -24,6 +24,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
+ * Handles creation and management of indexing the posts.
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
@@ -35,8 +36,6 @@ public class Indexer {
     public static final int totalIndexes = (fileQueue.size() / postsPerIndex) + 1;
 
     public Indexer() {
-//        System.out.println(totalIndexes);
-//        System.out.println(postsPerIndex);
         indexList = new ArrayList<>();
         queue = new PriorityQueue<>((a, b) -> {
             return b.getDate().compareTo(a.getDate());
@@ -57,6 +56,9 @@ public class Indexer {
         queue.add(p);
     }
 
+    /**
+     * Sorts the index in the order of the date of publication of the posts.
+     */
     protected void sortIndexes() {
         for (SingleIndex s : indexList) {
             for (int i = 0; i < postsPerIndex && !queue.isEmpty(); i++) {

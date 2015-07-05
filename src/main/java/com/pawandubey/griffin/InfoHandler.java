@@ -16,6 +16,7 @@
 package com.pawandubey.griffin;
 
 import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
+import static com.pawandubey.griffin.Data.config;
 import com.pawandubey.griffin.model.Page;
 import com.pawandubey.griffin.model.Parsable;
 import com.pawandubey.griffin.model.Post;
@@ -79,8 +80,10 @@ public class InfoHandler {
 
     //TODO refactor number of posts.
     /**
-     * Finds the N(5) latest posts chronologically to display in the index and
+     * Finds the N latest posts chronologically to display in the index and
      * to write their paths in the info file.
+     * Here N is the number of posts per
+     * index page.
      *
      * @param collection the queue of Parsables
      */
@@ -89,7 +92,7 @@ public class InfoHandler {
                 .filter(p -> p instanceof Post)
                 .sorted((a, b) -> {
                     return b.getDate().compareTo(a.getDate());
-                }).limit(5)
+                }).limit(config.getIndexPosts())
                 .forEach(p -> Data.latestPosts.add(p));
 
     }
