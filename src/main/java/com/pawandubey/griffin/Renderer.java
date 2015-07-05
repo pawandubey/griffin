@@ -40,6 +40,8 @@ public class Renderer {
     private final Template postTemplate;
     private final Template pageTemplate;
     private final Template indexTemplate;
+    private final Template sitemapTemplate;
+    private final Template rssTemplate;
 
     /**
      * Creates a new Renderer instance and compiles the templates
@@ -50,6 +52,8 @@ public class Renderer {
         postTemplate = handlebar.compile("post");
         pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");
+        sitemapTemplate = handlebar.compile("SITEMAP");
+        rssTemplate = handlebar.compile("feed");
     }
 
     /**
@@ -85,5 +89,19 @@ public class Renderer {
         map.put("data", Data.datum);
         //map.put("navpages", Data.navPages);
         return indexTemplate.apply(map);
+    }
+
+    protected String renderSitemap() throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("config", Data.config);
+        map.put("data", Data.datum);
+        return sitemapTemplate.apply(map);
+    }
+
+    protected String renderRssFeed() throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("config", Data.config);
+        map.put("data", Data.datum);
+        return rssTemplate.apply(map);
     }
 }

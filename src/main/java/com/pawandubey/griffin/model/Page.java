@@ -16,6 +16,7 @@
 package com.pawandubey.griffin.model;
 
 import com.pawandubey.griffin.Data;
+import static com.pawandubey.griffin.DirectoryCrawler.EXCERPT_MARKER;
 import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +35,7 @@ public class Page implements Parsable {
     private final String author;
     private final String location;
     private String content;
-    private final String excerpt;
+    private String excerpt;
     private final String slug;
     private final String layout;
     private String permalink;
@@ -48,23 +49,21 @@ public class Page implements Parsable {
      * @param auth
      * @param loc
      * @param cont
-     * @param exc
      * @param img
      * @param slu
      * @param lay
      * @param tag
      */
-    public Page(String titl, String auth, Path loc, String cont, String exc,
+    public Page(String titl, String auth, Path loc, String cont,
                 String img, String slu, String lay, List<String> tag) {
         author = auth;
         title = titl;
         location = loc.toString();
         content = cont;
-        excerpt = exc;
         slug = slu;
         layout = lay;
         tags = tag;
-        featuredImage = img;
+        featuredImage = img;        
     }
 
     /**
@@ -141,11 +140,14 @@ public class Page implements Parsable {
     /**
      * Sets the content of the page.
      *
-     * @param content the content to be set.
+     * @param cont the content to be set.
      */
     @Override
-    public void setContent(String content) {
-        this.content = content;
+    public void setContent(String cont) {
+        this.content = cont.replace(EXCERPT_MARKER, "");
+        int excInd = cont.indexOf(EXCERPT_MARKER);
+        System.out.println(excInd);
+        excerpt = excInd > 0 ? cont.substring(0, excInd) : cont.substring(0, 255);
     }
 
     /**

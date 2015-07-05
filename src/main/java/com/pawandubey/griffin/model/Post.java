@@ -17,6 +17,7 @@ package com.pawandubey.griffin.model;
 
 import com.pawandubey.griffin.Data;
 import static com.pawandubey.griffin.Data.config;
+import static com.pawandubey.griffin.DirectoryCrawler.EXCERPT_MARKER;
 import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +35,7 @@ public class Post implements Parsable {
 
     private final String title;
     private final String author;
-    private final String excerpt;
+    private String excerpt;
     private final LocalDate date;
     private final String prettyDate;
     private final String location;
@@ -53,17 +54,15 @@ public class Post implements Parsable {
      * @param dat the post date
      * @param loc the post's Path
      * @param cont the post's content
-     * @param exc the post's excerpt
      * @param image
      * @param slu the post slug
      * @param lay the layout
      * @param tag the list of tags
          */
     public Post(String titl, String auth, LocalDate dat,
-                Path loc, String cont, String exc, String image, String slu, String lay, List<String> tag) {
+                Path loc, String cont, String image, String slu, String lay, List<String> tag) {
         title = titl;
         author = auth;
-        excerpt = exc;
         date = dat;
         prettyDate = date.format(DateTimeFormatter.ofPattern(config.getOutputDateFormat()));
         location = loc.toString();
@@ -152,13 +151,18 @@ public class Post implements Parsable {
     }
 
     /**
-     * Sets the content of the post to the given String.
+     * Sets the content of the post to the given String, replacing any excerpt
+     * markers.. Also sets the excerpt of the post to till the first occurrence
+     * of the excerpt marker.
      *
-     * @param content the String representing the new content.
+     * @param cont the String representing the new content.
      */
     @Override
-    public void setContent(String content) {
-        this.content = content;
+    public void setContent(String cont) {
+        this.content = cont.replace(EXCERPT_MARKER, "");
+        int excInd = cont.indexOf(EXCERPT_MARKER);
+        System.out.println(excInd);
+        excerpt = excInd > 0 ? cont.substring(0, excInd) : cont.substring(0, 255);
     }
 
     /**

@@ -88,14 +88,35 @@ public class Parser {
         if (config.getRenderTags() && Files.notExists(Paths.get(TAG_DIRECTORY))) {
             Files.createDirectory(Paths.get(TAG_DIRECTORY));
         }
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml"))) {
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml"), StandardCharsets.UTF_8)) {
+                bw.write(renderer.renderSitemap());
+            }
+            catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         while (!collection.isEmpty()) {
             p = collection.take();
             writeParsedFile(p);
             renderTags();
         }
+        renderIndexAndRss();
+    }
+
+    private void renderIndexAndRss() {
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderIndex());
+            }
+            catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"))) {
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"), StandardCharsets.UTF_8)) {
+                bw.write(renderer.renderRssFeed());
             }
             catch (IOException ex) {
                 Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);

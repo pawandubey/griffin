@@ -59,7 +59,7 @@ public class DirectoryCrawler {
     public static final String TAG_DIRECTORY = OUTPUT_DIRECTORY + FILE_SEPARATOR + "tags";
     private final StringBuilder header = new StringBuilder();
     private final Toml toml = new Toml();
-    public static final String EXCERPT_MARKER = "<!--more-->";
+    public static final String EXCERPT_MARKER = "##more##";
 
     public DirectoryCrawler() {
 
@@ -215,29 +215,16 @@ public class DirectoryCrawler {
             String layout = toml.getString("layout");
             List<String> tag = toml.getList("tags");
             String img = toml.getString("image");
-
-            String exc = null;
             StringBuilder content = new StringBuilder();
             String[] halves;
             while ((line = br.readLine()) != null) {
-                if (line.contains(EXCERPT_MARKER)) {
-                    halves = line.split("<!--more-->");
-                    if (halves.length > 0) {
-                        exc = content.toString().concat(halves[0]);
-                    }
-                    content.append(String.join(" ", halves)).append(LINE_SEPARATOR);
-                    continue;
-                }
                 content.append(line).append(LINE_SEPARATOR);
             }
-            if (exc == null || exc.length() == 0) {
-                exc = content.substring(0, 255);
-            }
             if (layout.equals("post")) {
-                return new Post(title, author, publishDate, file, content.toString(), exc, img, slug, layout, tag);
+                return new Post(title, author, publishDate, file, content.toString(), img, slug, layout, tag);
             }
             else {
-                return new Page(title, author, file, content.toString(), exc, img, slug, layout, tag);
+                return new Page(title, author, file, content.toString(), img, slug, layout, tag);
             }
         }
         catch (IOException ex) {
