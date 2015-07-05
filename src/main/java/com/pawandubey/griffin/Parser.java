@@ -25,12 +25,12 @@ import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIRECTORY;
 import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
 import static com.pawandubey.griffin.DirectoryCrawler.TAG_DIRECTORY;
 import com.pawandubey.griffin.model.Parsable;
+import com.pawandubey.griffin.model.Post;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -53,10 +53,12 @@ import java.util.stream.Collectors;
  */
 public class Parser {
 
+    private Indexer indexer;
     private final Configuration renderConfig;
     private final Renderer renderer;
     private String parsedContent;
     private Lock lock = new ReentrantLock();
+    private int i = 0;
 
     /**
      * creates a parser with configuration set to enable safe mode HTML with
@@ -66,6 +68,7 @@ public class Parser {
      * @throws java.io.IOException the exception
      */
     public Parser() throws IOException {
+        indexer = new Indexer();
         renderer = new Renderer();
         renderConfig = Configuration.builder().enableSafeMode()
                 .forceExtentedProfile()
@@ -73,6 +76,7 @@ public class Parser {
                 .setEncoding("UTF-8")
                 .setCodeBlockEmitter(new CodeBlockEmitter())
                 .build();
+        indexer.initIndexes();
     }
 
     /**
@@ -101,19 +105,36 @@ public class Parser {
             writeParsedFile(p);
             renderTags();
         }
+        indexer.sortIndexes();
+        //System.out.println(indexer.getIndexList().size());
         renderIndexAndRss();
+
     }
 
-    private void renderIndexAndRss() {
+    private void renderIndexAndRss() throws IOException {
+        List<SingleIndex> list = indexer.getIndexList();
+
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"), StandardCharsets.UTF_8)) {
-                bw.write(renderer.renderIndex());
+                bw.write(renderer.renderIndex(list.get(0)));
             }
             catch (IOException ex) {
                 Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY, "page"))) {
+            Files.createDirectory(Paths.get(OUTPUT_DIRECTORY, "page"));
+        }
+        list.remove(0);
+
+        for (SingleIndex s : list) {
+            Path secondaryIndexPath = Paths.get(OUTPUT_DIRECTORY, "page", "" + (list.indexOf(s) + 2));
+            Files.createDirectory(secondaryIndexPath);
+            try (BufferedWriter bw = Files.newBufferedWriter(secondaryIndexPath.resolve("index.html"), StandardCharsets.UTF_8)) {
+                bw.write(renderer.renderIndex(s));
+            }
+        }
+
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderRssFeed());
@@ -149,56 +170,43 @@ public class Parser {
                         .collect(Collectors.toList()));
             }
 
-            parts.stream().forEach(p
-                    -> {
-                        tagExecutor.submit(() -> {
-                            for (String t : p) {
-                                Path tagDir = Paths.get(TAG_DIRECTORY).resolve(t);
-                                if (Files.notExists(tagDir)) {
-                                    if (lock.tryLock()) {
+            parts.stream()
+                    .forEach(l -> tagExecutor.submit(() -> {
+                for (String a : l) {
+                    Path tagDir = Paths.get(TAG_DIRECTORY).resolve(a);
+                    if (Files.notExists(tagDir)) {
+                        try {
+                            Files.createDirectory(tagDir);
+                        }
+                        catch (IOException ex) {
+                            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
 
-                                        try {
-                                            if (Files.notExists(tagDir)) {
-                                                Files.createDirectory(tagDir);
-                                            }
-
-                                            for (Parsable pa : tags.get(t)) {
-                                                Path resolvedTagDir = tagDir.resolve(pa.getSlug());
-//                                                if (Files.notExists(resolvedTagDir)) {
-//                                                    lock.lock();
-                                                try {
-
-                                                    if (Files.notExists(resolvedTagDir)) {
-                                                        Files.createDirectory(resolvedTagDir);
-                                                    }
-                                                    Path link = resolvedTagDir.resolve("index.html");
-                                                    Path htmlPath = resolveHtmlPath(pa);
-                                                    if (Files.notExists(link, LinkOption.NOFOLLOW_LINKS)) {
-                                                        Files.createSymbolicLink(link, htmlPath);
-                                                    }
-                                                }
-                                                catch (IOException ex) {
-                                                    Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-                                                }
-//                                                    finally {
-//                                                        lock.unlock();
-//                                                    }
-
-                                            }
-
-                                        }
-
-                                        catch (IOException ex) {
-                                            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-                                        }
-                                        finally {
-                                            lock.unlock();
-                                        }
+                    List<Parsable> parsables = tags.get(a);
+                    for (Parsable p : parsables) {
+                        Path slugPath = tagDir.resolve(p.getSlug());
+                        if (Files.notExists(slugPath)) {
+                            if (lock.tryLock()) {
+                                try {
+                                    if (Files.notExists(slugPath)) {
+                                        Files.createDirectory(slugPath);
+                                        Path linkedFile = resolveHtmlPath(p);
+                                        Files.createSymbolicLink(slugPath.resolve("index.html"), linkedFile);
+                                    }
+                                }
+                                catch (IOException ex) {
+                                    Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                finally {
+                                    lock.unlock();
+                                }
                             }
                         }
                     }
-                });
-                    });
+                }
+                    }));
+
         }
     }
 
@@ -256,9 +264,16 @@ public class Parser {
     private void writeParsedFile(Parsable p) throws IOException {
         Path htmlPath = resolveHtmlPath(p);
 
+        if (config.getRenderTags()) {
+            resolveTags(p, htmlPath);
+        }
+
         try (BufferedWriter bw = Files.newBufferedWriter(htmlPath, StandardCharsets.UTF_8)) {
             parsedContent = Processor.process(p.getContent(), renderConfig);
             p.setContent(parsedContent);
+            if (p instanceof Post) {
+                indexer.addToIndex(p);
+            }
             bw.write(renderer.renderParsable(p));
 
         }
@@ -266,9 +281,7 @@ public class Parser {
             Logger.getLogger(Parser.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        if (config.getRenderTags()) {
-            resolveTags(p, htmlPath);
-        }
+
     }
 
     private Path resolveHtmlPath(Parsable p) throws IOException {

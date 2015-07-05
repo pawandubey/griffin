@@ -17,7 +17,7 @@ package com.pawandubey.griffin;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
+import com.github.jknack.handlebars.cache.ConcurrentMapTemplateCache;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
 import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
@@ -36,7 +36,7 @@ public class Renderer {
     public final static String TEMPLATES_FOLDER_NAME = "templates";
     public final static String templateRoot = ROOT_DIRECTORY + FILE_SEPARATOR + ASSETS_FOLDER_NAME + FILE_SEPARATOR + TEMPLATES_FOLDER_NAME + FILE_SEPARATOR + Data.config.getTheme();
     private final TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
-    private final Handlebars handlebar = new Handlebars(loader).with(new HighConcurrencyTemplateCache());
+    private final Handlebars handlebar = new Handlebars(loader).with(new ConcurrentMapTemplateCache());
     private final Template postTemplate;
     private final Template pageTemplate;
     private final Template indexTemplate;
@@ -80,14 +80,16 @@ public class Renderer {
     /**
      * Renders the index page for the site.
      *
+     * @param path
+     * @param s
      * @return the String representation of the rendering.
      * @throws IOException the exception
      */
-    protected String renderIndex() throws IOException {
+    protected String renderIndex(SingleIndex s) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", Data.config);
         map.put("data", Data.datum);
-        //map.put("navpages", Data.navPages);
+        map.put("index", s);
         return indexTemplate.apply(map);
     }
 

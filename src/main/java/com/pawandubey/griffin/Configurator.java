@@ -18,6 +18,7 @@ package com.pawandubey.griffin;
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.griffin.ConfigurationKeys.EXCLUDE;
 import static com.pawandubey.griffin.ConfigurationKeys.IMAGE;
+import static com.pawandubey.griffin.ConfigurationKeys.INDEX_POSTS;
 import static com.pawandubey.griffin.ConfigurationKeys.IN_DATE_FORMAT;
 import static com.pawandubey.griffin.ConfigurationKeys.OUTPUT_DIR;
 import static com.pawandubey.griffin.ConfigurationKeys.OUT_DATE_FORMAT;
@@ -65,6 +66,7 @@ public class Configurator {
     private Integer port = 9090;
     private Social social;
     private String headerImage;
+    private Integer indexPosts = 5;
     private boolean renderTags = false;
     public static final String LINE_SEPARATOR = System.lineSeparator();
 
@@ -83,6 +85,7 @@ public class Configurator {
             inputDateFormat = toml.getString(IN_DATE_FORMAT.key);
             outputDateFormat = toml.getString(OUT_DATE_FORMAT.key);
             theme = toml.getString(THEME.key);
+            indexPosts = Integer.valueOf(toml.getLong(INDEX_POSTS.key).toString());
             port = Integer.valueOf(toml.getLong(PORT.key).toString());
             Map<String, Object> socialLinks = toml.getTable(SOCIAL.key).to(Map.class);
             social = new Social(socialLinks);
@@ -138,6 +141,7 @@ public class Configurator {
                       + "outputdate = \"MMM d yyyy\"" + LINE_SEPARATOR
                       + "theme = \"hyde\"" + LINE_SEPARATOR
                       + "headerimage = \"\""
+                      + "postsperindex = 5"
                       + "" + LINE_SEPARATOR
                       + "#render files as per tags?" + LINE_SEPARATOR
                       + "rendertags = false" + LINE_SEPARATOR
@@ -238,6 +242,14 @@ public class Configurator {
      */
     public String getTheme() {
         return theme;
+    }
+
+    /**
+     *
+     * @return the number of posts per index page
+     */
+    public Integer getIndexPosts() {
+        return indexPosts;
     }
 
     /**

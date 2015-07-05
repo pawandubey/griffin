@@ -161,7 +161,7 @@ public class Post implements Parsable {
     public void setContent(String cont) {
         this.content = cont.replace(EXCERPT_MARKER, "");
         int excInd = cont.indexOf(EXCERPT_MARKER);
-        System.out.println(excInd);
+//        System.out.println(excInd);
         excerpt = excInd > 0 ? cont.substring(0, excInd) : cont.substring(0, 255);
     }
 

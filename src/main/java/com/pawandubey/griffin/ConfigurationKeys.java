@@ -35,6 +35,7 @@ public enum ConfigurationKeys {
     THEME("theme"),
     IMAGE("headerimage"),
     PORT("port"),
+    INDEX_POSTS("postsperindex"),
     RENDER_TAGS("rendertags"),
     SOCIAL("social");
 
