@@ -17,12 +17,16 @@ Griffin takes an opinionated approach to static site generation, making some dec
 for you to ensure that you get the best performance possible without any need for
 complex command line fu. See usage demo below.
 
+**See the [Wiki](http://github.com/pawandubey/griffin/wiki/Home) for more information.**
+
 ##Features
 Griffin supports tags, pagination, live preview in your browser, social-media
 support, easy theming with {{handlebars}} templates, syntax highlighting and more!
 See the [full Feature list on the Wiki](http://github.com/pawandubey/griffin/wiki/Features) for more features.
 
 ##Usage Demo
+
+See [how to write posts on the wiki for more information](http://github.com/pawandubey/griffin/wiki/Writing)
 
 [![asciicast](https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03.png)](https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03)
 
