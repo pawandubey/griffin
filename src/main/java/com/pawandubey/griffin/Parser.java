@@ -185,15 +185,8 @@ public class Parser {
                         }
                     }
 
-                    List<Parsable> parsables = tags.get(a);
+                            List<Parsable> parsables = tags.get(a);
 
-                    try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {
-                        //System.out.println(a + " : " + tags.get(a));
-                        bw.write(renderer.renderTagIndex(a, parsables));
-                    }
-                    catch (IOException ex) {
-                        Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
-                    }
                     for (Parsable p : parsables) {
                         Path slugPath = tagDir.resolve(p.getSlug());
                         if (Files.notExists(slugPath)) {
@@ -212,6 +205,18 @@ public class Parser {
                                     lock.unlock();
                                 }
                             }
+                        }
+                    }
+                    if (lock.tryLock()) {
+                        try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {
+                            //System.out.println(a + " : " + tags.get(a));
+                            bw.write(renderer.renderTagIndex(a, parsables));
+                        }
+                        catch (IOException ex) {
+                            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        finally {
+                            lock.unlock();
                         }
                     }
                 }
