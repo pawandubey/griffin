@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.pawandubey.griffin;
+package com.pawandubey.griffin.renderer;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.cache.ConcurrentMapTemplateCache;
 import com.github.jknack.handlebars.io.FileTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
-import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIRECTORY;
+import com.pawandubey.griffin.Data;
+import com.pawandubey.griffin.SingleIndex;
 import com.pawandubey.griffin.model.Parsable;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,10 +34,7 @@ import java.util.Map;
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class Renderer {
-    public final static String ASSETS_FOLDER_NAME = "assets";
-    public final static String TEMPLATES_FOLDER_NAME = "templates";
-    public final static String templateRoot = ROOT_DIRECTORY + FILE_SEPARATOR + ASSETS_FOLDER_NAME + FILE_SEPARATOR + TEMPLATES_FOLDER_NAME + FILE_SEPARATOR + Data.config.getTheme();
+public class HandlebarsRenderer implements Renderer {
     private final TemplateLoader loader = new FileTemplateLoader(templateRoot, ".html");
     private final Handlebars handlebar = new Handlebars(loader).with(new ConcurrentMapTemplateCache());
     private final Template postTemplate;
@@ -52,7 +49,7 @@ public class Renderer {
      *
      * @throws IOException the exception
      */
-    public Renderer() throws IOException {
+    public HandlebarsRenderer() throws IOException {
         postTemplate = handlebar.compile("post");
         pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");
@@ -73,7 +70,8 @@ public class Renderer {
      * @return the String representation of the rendering.
      * @throws IOException the exception
      */
-    protected String renderParsable(Parsable parsable) throws IOException {
+    @Override
+    public String renderParsable(Parsable parsable) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("data", Data.datum);
         map.put("post", parsable);
@@ -93,7 +91,8 @@ public class Renderer {
      * @return the String representation of the rendering.
      * @throws IOException the exception
      */
-    protected String renderIndex(SingleIndex s) throws IOException {
+    @Override
+    public String renderIndex(SingleIndex s) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", Data.config);
         map.put("data", Data.datum);
@@ -101,7 +100,17 @@ public class Renderer {
         return indexTemplate.apply(map);
     }
 
-    protected String renderTagIndex(String tag, List<Parsable> list) throws IOException {
+    /**
+     * Renders the index page for each tag as supplied with the list containing
+     * the posts tagged with the tag.
+     *
+     * @param tag the tag for the index
+     * @param list the list of posts with the tag
+     * @return the String representation of the index
+     * @throws IOException the exception
+     */
+    @Override
+    public String renderTagIndex(String tag, List<Parsable> list) throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("tag", tag);
         map.put("posts", list);
@@ -110,14 +119,28 @@ public class Renderer {
         return tagTemplate.apply(map);
     }
 
-    protected String renderSitemap() throws IOException {
+    /**
+     * Renders the Sitemap.xml file
+     *
+     * @return the string representation of the Sitemap
+     * @throws IOException
+     */
+    @Override
+    public String renderSitemap() throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", Data.config);
         map.put("data", Data.datum);
         return sitemapTemplate.apply(map);
     }
 
-    protected String renderRssFeed() throws IOException {
+    /**
+     * Renders the the rss feed
+     *
+     * @return the string representation of the feed.xml file
+     * @throws IOException
+     */
+    @Override
+    public String renderRssFeed() throws IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("config", Data.config);
         map.put("data", Data.datum);

@@ -15,6 +15,7 @@
  */
 package com.pawandubey.griffin;
 
+import com.pawandubey.griffin.renderer.HandlebarsRenderer;
 import static com.pawandubey.griffin.DirectoryCrawler.OUTPUT_DIRECTORY;
 import io.undertow.Handlers;
 import static io.undertow.Handlers.resource;
@@ -49,7 +50,7 @@ public class Server {
     protected void startPreview() {
         ResourceHandler resourceHandler = resource(new PathResourceManager(Paths.get(OUTPUT_DIRECTORY), 100, true, true))
                 .setDirectoryListingEnabled(false);
-        FileErrorPageHandler errorHandler = new FileErrorPageHandler(Paths.get(Renderer.templateRoot).resolve("404.html"), StatusCodes.NOT_FOUND);
+        FileErrorPageHandler errorHandler = new FileErrorPageHandler(Paths.get(HandlebarsRenderer.templateRoot).resolve("404.html"), StatusCodes.NOT_FOUND);
         errorHandler.setNext(resourceHandler);
         GracefulShutdownHandler shutdown = Handlers.gracefulShutdown(errorHandler);
         Undertow server = Undertow.builder().addHttpListener(port, "localhost")

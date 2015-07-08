@@ -35,6 +35,10 @@ public class Indexer {
     public static final Integer postsPerIndex = config.getIndexPosts();
     public static final int totalIndexes = (fileQueue.size() / postsPerIndex) + 1;
 
+    /**
+     * Creates a new indexer with a list of indexes and a sorted queue of
+     * parsables which are taken up by the indexes.
+     */
     public Indexer() {
         indexList = new ArrayList<>();
         queue = new PriorityQueue<>((a, b) -> {
@@ -42,16 +46,29 @@ public class Indexer {
         });
     }
 
+    /**
+     * Returns the list of indexes
+     *
+     * @return the list of SingleIndexes
+     */
     protected List<SingleIndex> getIndexList() {
         return this.indexList;
     }
 
+    /**
+     * Initializes the required number of indexes.
+     */
     protected void initIndexes() {
         for (int i = 0; i < totalIndexes; i++) {
             indexList.add(new SingleIndex(i + 1, i , i + 2));
         }
     }
 
+    /**
+     * Adds the given parsable to the index queue, sorting automatically on date
+     *
+     * @param p the parsable to be added
+     */
     protected void addToIndex(Parsable p) {
         queue.add(p);
     }

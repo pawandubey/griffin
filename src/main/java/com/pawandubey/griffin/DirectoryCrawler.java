@@ -18,7 +18,7 @@ package com.pawandubey.griffin;
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import static com.pawandubey.griffin.Data.config;
-import static com.pawandubey.griffin.Renderer.templateRoot;
+import static com.pawandubey.griffin.renderer.HandlebarsRenderer.templateRoot;
 import com.pawandubey.griffin.model.Page;
 import com.pawandubey.griffin.model.Parsable;
 import com.pawandubey.griffin.model.Post;

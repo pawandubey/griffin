@@ -15,6 +15,8 @@
  */
 package com.pawandubey.griffin;
 
+import com.pawandubey.griffin.renderer.HandlebarsRenderer;
+import com.pawandubey.griffin.renderer.Renderer;
 import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
 import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
@@ -69,7 +71,7 @@ public class Parser {
      */
     public Parser() throws IOException {
         indexer = new Indexer();
-        renderer = new Renderer();
+        renderer = new HandlebarsRenderer();
         renderConfig = Configuration.builder().enableSafeMode()
                 .forceExtentedProfile()
                 .setAllowSpacesInFencedCodeBlockDelimiters(true)
@@ -92,7 +94,8 @@ public class Parser {
         if (config.getRenderTags() && Files.notExists(Paths.get(TAG_DIRECTORY))) {
             Files.createDirectory(Paths.get(TAG_DIRECTORY));
         }
-        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml")) && Files.exists(Paths.get(Renderer.templateRoot).resolve("SITEMAP.html"))) {
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml"))
+            && Files.exists(Paths.get(HandlebarsRenderer.templateRoot).resolve("SITEMAP.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderSitemap());
             }
@@ -135,7 +138,7 @@ public class Parser {
             }
         }
 
-        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml")) && Files.exists(Paths.get(Renderer.templateRoot).resolve("feed.htm;"))) {
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml")) && Files.exists(Paths.get(HandlebarsRenderer.templateRoot).resolve("feed.htm;"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderRssFeed());
             }
