@@ -11,43 +11,66 @@
    /\____/
    \_/__/
 ````
+
+Griffin is a very small, convenient, and extremely fast static site generator.
+Griffin takes an opinionated approach to static site generation, making some decisions
+for you to ensure that you get the best performance possible without any need for
+complex command line fu.
+
+See the demo to learn basic usage.
+
 ##Usage Demo
 
 [![asciicast](https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03.png)](https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03)
 
+##Speed
 
+Griffin has been made for speed. So it will never disappoint. Griffin can generate 5000 posts in around 8 seconds
+on an average. That is less than 2 ms for each post. Although Griffin won't make much of a difference for the
+first few posts, you'll appreciate its capacity to scale to thousands of posts without a major bump in parsing time.
+Don't believe it? See for yourself below :
 
-## Contribution guidelines
-To contribute, 
-* First time:
-	* first `fork` this repository from the master branch.
-    * then `git clone` your fork onto your local machine.
-    * setup the remotes properly to pull the code from upstream:
-        * `cd griffin`
-        * do `git remote add upstream https://github.com/pawandubey/griffin.git`
-        * verify you have both `origin` and `upstream` remotes by `git remote -v` 
+[![asciicast](https://asciinema.org/a/5z2srcn3f5j3cl0jnhganou5m.png)](https://asciinema.org/a/5z2srcn3f5j3cl0jnhganou5m)
 
-* Before every contribution:
-    * Start a new topic branch off master branch:
-        * `cd griffin`
-        * `git checkout master`
-        * `git pull upstream master`
-        * `git push origin master`
-        * `git branch *<your branch name>*`
-        * `git checkout *<your branch name>*`
-    * Then commit all changes into your topic branch only. **This is important**.
-    * And push to **your fork** on github. 
-        * `git checkout *<your branch name>*`
-        * `git push origin *<your branch name>*` 
-    * Finalize your changes and prepare for sending pull request.
+##Usage
+Griffin is sub command based like git, svn etc. Each command is documented well.
+````
+griffin [subcommand] [options..] [arguments...]
+````
 
-* Before sending pull request:
-    * `git checkout master`
-    * `git pull upstream master`
-    * `git checkout *<your branch name>*`
-    * `git rebase master`
-    * `git push origin *<your branch name>*`
-* Send a pull request on github. [See how](https://help.github.com/articles/using-pull-requests/)
+However there are only three subcommands for three scenarios:
+
+* To initiate a new Griffin site, use new:
+````
+griffin new [option] <path>
+Options:
+
+ <path>                   : creates a new skeleton site at the given path
+ --help (-h)              : find help about this command (default: true)
+ -name (-n) <folder_name> : name of the directory to be created (default: griffin)
+````
+
+* To parse your content, use publish:
+````
+griffin publish [option]
+Options:
+
+ --help (-h)    : find help about this command (default: true)
+ --quick (-q)   : Publish only the files which have changed since the last modification. (default: false)
+ --rebuild (-r) : Rebuild the site from scratch. This may take time for more number of posts. (default: false)
+````
+
+* To preview your site in your browser, use preview:
+````
+griffin preview [option]
+Options:
+
+ --help (-h)               : find help about this command (default: true)
+ --port (-p) <port_number> : Port on which to launch the preview. Default to your configuredData. port. (default: 9090)
+````
+
+That is basically it. You write all your content in markdown. And run `griffin publish` and see the magic happen.
+
 
 ## License
 Copyright 2015 Pawan Dubey pawandubey@outlook.com.
@@ -56,7 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
