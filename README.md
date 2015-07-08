@@ -32,6 +32,13 @@ Don't believe it? See for yourself below :
 
 [![asciicast](https://asciinema.org/a/5z2srcn3f5j3cl0jnhganou5m.png)](https://asciinema.org/a/5z2srcn3f5j3cl0jnhganou5m)
 
+##Installation
+
+Grab the zip for the latest [release](http://github.com/pawandubey/griffin/releases) and unzip it somewhere.
+Add the `bin` folder of the unzipped location to your PATH environment variable.
+run `griffin --version` to check everything is working fine.
+
+
 ##Usage
 Griffin is sub command based like git, svn etc. Each command is documented well.
 ````
