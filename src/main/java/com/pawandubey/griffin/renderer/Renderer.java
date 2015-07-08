@@ -30,10 +30,11 @@ import java.util.List;
  * @author Pawan Dubey pawandubey@outlook.com
  */
 public interface Renderer {
-    String ASSETS_FOLDER_NAME = "assets";
-    String TEMPLATES_FOLDER_NAME = "templates";
+    //String ASSETS_FOLDER_NAME = "assets";
+
+    String TEMPLATES_FOLDER_NAME = "themes";
     String templateRoot = ROOT_DIRECTORY + FILE_SEPARATOR
-                          + ASSETS_FOLDER_NAME + FILE_SEPARATOR + TEMPLATES_FOLDER_NAME
+                          + TEMPLATES_FOLDER_NAME
                           + FILE_SEPARATOR + Data.config.getTheme();
 
     public String renderParsable(Parsable p) throws IOException;

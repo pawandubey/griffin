@@ -12,12 +12,15 @@
    \_/__/
 ````
 
-Griffin is a very small, convenient, and extremely fast static site generator.
+Griffin is a very small, convenient, and **extremely fast** static site generator.
 Griffin takes an opinionated approach to static site generation, making some decisions
 for you to ensure that you get the best performance possible without any need for
-complex command line fu.
+complex command line fu. See usage demo below.
 
-See the demo to learn basic usage.
+##Features
+Griffin supports tags, pagination, live preview in your browser, social-media
+support, easy theming with {{handlebars}} templates, syntax highlighting and more!
+See the [full Feature list on the Wiki](http://github.com/pawandubey/griffin/wiki/Features) for more features.
 
 ##Usage Demo
 
