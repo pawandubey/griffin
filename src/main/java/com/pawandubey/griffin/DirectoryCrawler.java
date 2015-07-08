@@ -92,6 +92,9 @@ public class DirectoryCrawler {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 Path correspondingOutputPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(dir));
+                if (config.getExcludeDirs().contains(dir.getFileName().toString())) {
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
@@ -149,6 +152,9 @@ public class DirectoryCrawler {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 Path correspondingOutputPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(dir));
+                if (config.getExcludeDirs().contains(dir.getFileName().toString())) {
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
                 if (Files.notExists(correspondingOutputPath)) {
                     Files.createDirectory(correspondingOutputPath);
                 }
