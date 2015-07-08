@@ -11,6 +11,12 @@
    /\____/
    \_/__/
 ````
+##Usage Demo
+
+<script type="text/javascript" src="https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03.js" id="asciicast-23152" async></script>
+
+
+
 ## Contribution guidelines
 To contribute, 
 * First time:
