@@ -24,7 +24,10 @@ import static com.pawandubey.griffin.DirectoryCrawler.FILE_SEPARATOR;
 import static com.pawandubey.griffin.DirectoryCrawler.ROOT_DIRECTORY;
 import com.pawandubey.griffin.model.Parsable;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,8 +43,9 @@ public class Renderer {
     private final Template postTemplate;
     private final Template pageTemplate;
     private final Template indexTemplate;
-    private final Template sitemapTemplate;
-    private final Template rssTemplate;
+    private Template sitemapTemplate;
+    private Template rssTemplate;
+    private final Template tagTemplate;
 
     /**
      * Creates a new Renderer instance and compiles the templates
@@ -52,8 +56,13 @@ public class Renderer {
         postTemplate = handlebar.compile("post");
         pageTemplate = handlebar.compile("page");
         indexTemplate = handlebar.compile("index");
-        sitemapTemplate = handlebar.compile("SITEMAP");
-        rssTemplate = handlebar.compile("feed");
+        tagTemplate = handlebar.compile("tagIndex");
+        if (Files.exists(Paths.get(templateRoot, "SITEMAP.html"))) {
+            sitemapTemplate = handlebar.compile("SITEMAP");
+        }
+        if (Files.exists(Paths.get(templateRoot, "feed.html"))) {
+            rssTemplate = handlebar.compile("feed");
+        }
     }
 
     /**
@@ -80,8 +89,7 @@ public class Renderer {
     /**
      * Renders the index page for the site.
      *
-     * @param path
-     * @param s
+     * @param s the single index
      * @return the String representation of the rendering.
      * @throws IOException the exception
      */
@@ -91,6 +99,15 @@ public class Renderer {
         map.put("data", Data.datum);
         map.put("index", s);
         return indexTemplate.apply(map);
+    }
+
+    protected String renderTagIndex(String tag, List<Parsable> list) throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("tag", tag);
+        map.put("posts", list);
+        map.put("config", Data.config);
+        map.put("data", Data.datum);
+        return tagTemplate.apply(map);
     }
 
     protected String renderSitemap() throws IOException {

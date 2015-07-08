@@ -92,7 +92,7 @@ public class Parser {
         if (config.getRenderTags() && Files.notExists(Paths.get(TAG_DIRECTORY))) {
             Files.createDirectory(Paths.get(TAG_DIRECTORY));
         }
-        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml"))) {
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml")) && Files.exists(Paths.get(Renderer.templateRoot).resolve("SITEMAP.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("SITEMAP.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderSitemap());
             }
@@ -135,7 +135,7 @@ public class Parser {
             }
         }
 
-        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"))) {
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml")) && Files.exists(Paths.get(Renderer.templateRoot).resolve("feed.htm;"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderRssFeed());
             }
@@ -157,6 +157,7 @@ public class Parser {
      */
     protected void renderTags() throws IOException {
         if (config.getRenderTags()) {
+            //System.out.println(tags.get("code").size());
             int numThreads = (tags.size() / 10) + 1;
             ExecutorService tagExecutor = Executors.newFixedThreadPool(numThreads);
             executorSet.add(tagExecutor);
@@ -175,8 +176,9 @@ public class Parser {
                 for (String a : l) {
                     Path tagDir = Paths.get(TAG_DIRECTORY).resolve(a);
                     if (Files.notExists(tagDir)) {
-                        try {
+                        try {// (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {
                             Files.createDirectory(tagDir);
+                            //bw.write(renderer.renderTagIndex(a, tags.get(a)));
                         }
                         catch (IOException ex) {
                             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
@@ -184,6 +186,14 @@ public class Parser {
                     }
 
                     List<Parsable> parsables = tags.get(a);
+
+                    try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {
+                        //System.out.println(a + " : " + tags.get(a));
+                        bw.write(renderer.renderTagIndex(a, parsables));
+                    }
+                    catch (IOException ex) {
+                        Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     for (Parsable p : parsables) {
                         Path slugPath = tagDir.resolve(p.getSlug());
                         if (Files.notExists(slugPath)) {
