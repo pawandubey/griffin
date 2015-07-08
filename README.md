@@ -13,7 +13,7 @@
 ````
 ##Usage Demo
 
-<script type="text/javascript" src="https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03.js" id="asciicast-23152" async></script>
+[![asciicast](https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03.png)](https://asciinema.org/a/egk1z7gb0mhjxvx7n3kdq1c03)
 
 
 
