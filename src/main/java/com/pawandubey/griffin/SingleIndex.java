@@ -50,23 +50,22 @@ public class SingleIndex {
     public SingleIndex(int c, int p, int n) {
         if (c == 1) {
             currentPage = config.getSiteBaseUrl();
-            previousPage = "/";
-            nextPage = config.getSiteBaseUrl().concat("/page/").concat("" + n);
+            previousPage = null;
         }
         else if (c == 2) {
             currentPage = config.getSiteBaseUrl().concat("/page/").concat("" + c);
-            previousPage = config.getSiteBaseUrl();
-            nextPage = config.getSiteBaseUrl().concat("/page/").concat("" + n);
-        }
-        else if (c == totalIndexes) {
-            currentPage = config.getSiteBaseUrl().concat("/page/").concat("" + c);
-            previousPage = config.getSiteBaseUrl().concat("/page/").concat("" + p);
-            nextPage = "/";
+            previousPage = config.getSiteBaseUrl();            
         }
         else {
             currentPage = config.getSiteBaseUrl().concat("/page/").concat("" + c);
-            previousPage = config.getSiteBaseUrl().concat("/page/").concat("" + p);
-            nextPage = config.getSiteBaseUrl().concat("/page/").concat("" + n);;
+            previousPage = config.getSiteBaseUrl().concat("/page/").concat("" + p);            
+        }
+
+        if (c == totalIndexes) {
+            nextPage = null;
+        }
+        else {
+            nextPage = config.getSiteBaseUrl().concat("/page/").concat("" + n);
         }
         posts = new ArrayList<>();
     }

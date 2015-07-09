@@ -15,8 +15,6 @@
  */
 package com.pawandubey.griffin;
 
-import com.pawandubey.griffin.renderer.HandlebarsRenderer;
-import com.pawandubey.griffin.renderer.Renderer;
 import com.github.rjeschke.txtmark.Configuration;
 import com.github.rjeschke.txtmark.Processor;
 import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
@@ -28,6 +26,8 @@ import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
 import static com.pawandubey.griffin.DirectoryCrawler.TAG_DIRECTORY;
 import com.pawandubey.griffin.model.Parsable;
 import com.pawandubey.griffin.model.Post;
+import com.pawandubey.griffin.renderer.HandlebarsRenderer;
+import com.pawandubey.griffin.renderer.Renderer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -110,11 +110,11 @@ public class Parser {
         }
         indexer.sortIndexes();
         //System.out.println(indexer.getIndexList().size());
-        renderIndexAndRss();
+        renderIndexRssAnd404();
 
     }
 
-    private void renderIndexAndRss() throws IOException {
+    private void renderIndexRssAnd404() throws IOException {
         List<SingleIndex> list = indexer.getIndexList();
 
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("index.html"))) {
@@ -141,6 +141,15 @@ public class Parser {
         if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml")) && Files.exists(Paths.get(HandlebarsRenderer.templateRoot).resolve("feed.htm;"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderRssFeed());
+            }
+            catch (IOException ex) {
+                Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY, "404.html")) && Files.exists(Paths.get(HandlebarsRenderer.templateRoot, "404.html"))) {
+            try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("404.html"), StandardCharsets.UTF_8)) {
+                bw.write(renderer.render404());
             }
             catch (IOException ex) {
                 Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);

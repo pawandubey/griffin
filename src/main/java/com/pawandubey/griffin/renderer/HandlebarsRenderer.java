@@ -43,6 +43,7 @@ public class HandlebarsRenderer implements Renderer {
     private Template sitemapTemplate;
     private Template rssTemplate;
     private final Template tagTemplate;
+    private Template notFoundTemplate;
 
     /**
      * Creates a new Renderer instance and compiles the templates
@@ -59,6 +60,9 @@ public class HandlebarsRenderer implements Renderer {
         }
         if (Files.exists(Paths.get(templateRoot, "feed.html"))) {
             rssTemplate = handlebar.compile("feed");
+        }
+        if (Files.exists(Paths.get(templateRoot, "404.html"))) {
+            notFoundTemplate = handlebar.compile("404");
         }
     }
 
@@ -145,5 +149,13 @@ public class HandlebarsRenderer implements Renderer {
         map.put("config", Data.config);
         map.put("data", Data.datum);
         return rssTemplate.apply(map);
+    }
+
+    @Override
+    public String render404() throws IOException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("config", Data.config);
+        map.put("data", Data.datum);
+        return notFoundTemplate.apply(map);
     }
 }

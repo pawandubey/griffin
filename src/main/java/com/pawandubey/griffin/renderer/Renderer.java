@@ -46,4 +46,6 @@ public interface Renderer {
     public String renderSitemap() throws IOException;
 
     public String renderRssFeed() throws IOException;
+
+    public String render404() throws IOException;
 }

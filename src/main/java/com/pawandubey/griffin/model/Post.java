@@ -189,7 +189,7 @@ public class Post implements Parsable {
      */
     @Override
     public Path getFeaturedImage() {
-        return featuredImage != null ? Paths.get(featuredImage).toAbsolutePath().normalize() : null;
+        return featuredImage != null ? Paths.get(featuredImage) : null;
     }
 
 
