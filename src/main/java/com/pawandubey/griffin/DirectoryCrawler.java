@@ -85,7 +85,7 @@ public class DirectoryCrawler {
     protected void readIntoQueue(Path rootPath) throws IOException, InterruptedException {
 
         cleanOutputDirectory();
-        copyAssets();
+        copyTemplateAssets();
 
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
@@ -145,7 +145,7 @@ public class DirectoryCrawler {
      */
     protected void fastReadIntoQueue(Path rootPath) throws IOException, InterruptedException {
         cleanOutputDirectory();
-        copyAssets();
+        copyTemplateAssets();
 
         Files.walkFileTree(rootPath, new FileVisitor<Path>() {
 
@@ -279,7 +279,7 @@ public class DirectoryCrawler {
      *
      * @throws IOException the exception
      */
-    private void copyAssets() throws IOException {
+    private void copyTemplateAssets() throws IOException {
         System.out.println("Carefully copying the assests...");
         Path assetsPath = Paths.get(templateRoot, "assets");
         Path outputAssetsPath = Paths.get(OUTPUT_DIRECTORY, "assets");
