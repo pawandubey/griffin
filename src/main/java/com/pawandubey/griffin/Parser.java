@@ -169,7 +169,11 @@ public class Parser {
      */
     protected void renderTags() throws IOException {
         if (config.getRenderTags()) {
-            //System.out.println(tags.get("code").size());
+            for (List<Parsable> l : tags.values()) {
+                l.sort((s, t) -> {
+                    return t.getDate().compareTo(s.getDate());
+                });
+            }
             int numThreads = (tags.size() / 10) + 1;
             ExecutorService tagExecutor = Executors.newFixedThreadPool(numThreads);
             executorSet.add(tagExecutor);
@@ -197,8 +201,8 @@ public class Parser {
                         }
                     }
 
-                            List<Parsable> parsables = tags.get(a);
-
+                    List<Parsable> parsables = tags.get(a);
+                    
                     for (Parsable p : parsables) {
                         Path slugPath = tagDir.resolve(p.getSlug());
                         if (Files.notExists(slugPath)) {
@@ -219,9 +223,9 @@ public class Parser {
                             }
                         }
                     }
+                    
                     if (lock.tryLock()) {
-                        try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {
-                            //System.out.println(a + " : " + tags.get(a));
+                        try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {                           
                             bw.write(renderer.renderTagIndex(a, parsables));
                         }
                         catch (IOException ex) {
@@ -291,7 +295,7 @@ public class Parser {
     private void writeParsedFile(Parsable p) throws IOException {
         Path htmlPath = resolveHtmlPath(p);
 
-        if (config.getRenderTags()) {
+        if (config.getRenderTags() && p instanceof Post) {
             resolveTags(p, htmlPath);
         }
 

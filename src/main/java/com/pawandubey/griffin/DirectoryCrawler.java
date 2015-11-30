@@ -18,10 +18,10 @@ package com.pawandubey.griffin;
 import com.moandjiezana.toml.Toml;
 import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import static com.pawandubey.griffin.Data.config;
-import static com.pawandubey.griffin.renderer.HandlebarsRenderer.templateRoot;
 import com.pawandubey.griffin.model.Page;
 import com.pawandubey.griffin.model.Parsable;
 import com.pawandubey.griffin.model.Post;
+import static com.pawandubey.griffin.renderer.Renderer.templateRoot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -168,14 +168,14 @@ public class DirectoryCrawler {
                     LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
                     LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
-                    if (fileModified.isAfter(lastParse)) {
-                        if (Files.probeContentType(file).equals("text/x-markdown")) {
+                    if (Files.probeContentType(file).equals("text/x-markdown")) {
+                        if (fileModified.isAfter(lastParse)) {
                             Parsable parsable = createParsable(file);
                             Data.fileQueue.put(parsable);
                         }
-                        else {
-                            Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
-                        }
+                    }
+                    else {
+                        Files.copy(file, resolvedPath, StandardCopyOption.REPLACE_EXISTING);
                     }
 
                 }
