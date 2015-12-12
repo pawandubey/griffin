@@ -92,7 +92,9 @@ public class Configurator {
             renderTags = toml.getBoolean(RENDER_TAGS.key);
             headerImage = toml.getString(IMAGE.key);
         }
-        this.siteBaseUrl = "http://localhost:" + port;
+        if (this.siteBaseUrl.contains("localhost")) {
+            this.siteBaseUrl = "http://localhost:" + port;
+        }
     }
 
     protected Configurator withSiteName(String name) {
