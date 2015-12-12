@@ -171,6 +171,7 @@ public class DirectoryCrawler {
                     if (Files.probeContentType(file).equals("text/x-markdown")) {
                         if (fileModified.isAfter(lastParse)) {
                             Parsable parsable = createParsable(file);
+                            Data.fileQueue.removeIf(p -> p.getPermalink().equals(parsable.getPermalink()));
                             Data.fileQueue.put(parsable);
                         }
                     }
