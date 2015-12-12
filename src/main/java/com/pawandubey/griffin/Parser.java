@@ -332,6 +332,7 @@ public class Parser {
         for (String t : ptags) {
             if (!t.equals("nav")) {
                 if (tags.get(t) != null) {
+                    tags.get(t).removeIf(q -> q.getPermalink().equals(p.getPermalink()));
                     tags.get(t).add(p);
                 }
                 else {
