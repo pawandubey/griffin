@@ -211,7 +211,7 @@ public class Parser {
                                     if (Files.notExists(slugPath)) {
                                         Files.createDirectory(slugPath);
                                         Path linkedFile = resolveHtmlPath(p);
-                                        Files.createSymbolicLink(slugPath.resolve("index.html"), linkedFile);
+                                        Files.createSymbolicLink(slugPath.resolve("index.html"), Paths.get("/").resolve(Paths.get(OUTPUT_DIRECTORY)).relativize(linkedFile));
                                     }
                                 }
                                 catch (IOException ex) {
