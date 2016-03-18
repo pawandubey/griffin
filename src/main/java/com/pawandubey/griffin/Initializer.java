@@ -17,6 +17,7 @@ package com.pawandubey.griffin;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.zeroturnaround.zip.ZipUtil;
@@ -29,9 +30,12 @@ public class Initializer {
 
     private final String zipp;// = Paths.get(ClassLoader.getSystemClassLoader().getResource(".").getPath()).getParent().toString();
 
-    public Initializer() {
-        Path jarRootPath = Paths.get(Initializer.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent();
-        zipp = jarRootPath.toAbsolutePath().toString();        
+    public Initializer() throws URISyntaxException {
+        Path jarRootPath;
+
+        jarRootPath = Paths.get(Initializer.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+        zipp = jarRootPath.toAbsolutePath().toString();           
+        
     }
 
     /**
