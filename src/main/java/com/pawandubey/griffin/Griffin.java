@@ -27,6 +27,7 @@ import com.pawandubey.griffin.model.Parsable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
@@ -97,8 +98,9 @@ public class Griffin {
      * @param path The path at which to scaffold.
      * @param name The name to give to the directory
      * @throws IOException the exception
+     * @throws java.net.URISyntaxException
      */
-    public void initialize(Path path, String name) throws IOException {
+    public void initialize(Path path, String name) throws IOException, URISyntaxException {
         checkPathValidity(path, name);
 
         initializeConfigurationSettings(path, name);

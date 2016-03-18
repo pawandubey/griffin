@@ -18,6 +18,7 @@ package com.pawandubey.griffin.cli;
 import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import com.pawandubey.griffin.Griffin;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class NewCommand implements GriffinCommand {
             griffin.initialize(filePath, name);
             System.out.println("Successfully created new site.");
         }
-        catch (IOException ex) {
+        catch (IOException | URISyntaxException ex) {
             Logger.getLogger(NewCommand.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
