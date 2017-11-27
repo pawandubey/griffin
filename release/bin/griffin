@@ -1,0 +1,4 @@
+#!/bin/bash
+EXEC_LOC="`dirname "$0"`"
+EXEC_PARENT="`dirname $EXEC_LOC`"
+java -jar ${EXEC_PARENT}/griffin.jar $@
