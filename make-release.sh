@@ -1,5 +1,7 @@
 #!/bin/bash
 
+NAME=griffin-$(git tag -l | tail -n 1).zip
+
 #build project
 mvn clean install
 
@@ -7,7 +9,8 @@ mvn clean install
 cp target/griffin.jar release/
 
 #zip the contents of release directory
-zip -r griffin-$(git tag -l | tail -n 1).zip release
+cd release && zip -r $NAME .
+cd .. && mv release/$NAME .
 
 #remove the copied jar from release
 rm release/griffin.jar
