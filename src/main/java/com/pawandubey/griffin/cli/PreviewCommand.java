@@ -51,6 +51,7 @@ public class PreviewCommand implements GriffinCommand {
         }
         else {
             griffin.printAsciiGriffin();
+            System.out.println("Starting preview on port " + port);
             griffin.preview(port);
         }
     }
