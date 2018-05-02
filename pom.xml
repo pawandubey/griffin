@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.pawandubey</groupId>
     <artifactId>griffin</artifactId>
-    <version>0.2.3</version>
+    <version>0.3.0</version>
     <name>griffin</name>
     <url>http://github.com/pawandubey/griffin</url>
     <licenses>

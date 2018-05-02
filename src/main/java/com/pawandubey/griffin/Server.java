@@ -67,19 +67,29 @@ public class Server {
 
         if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
-            try {
-                desktop.browse(new URI(url));
+
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    desktop.browse(new URI(url));
+                }
+                catch (IOException | URISyntaxException e) {
+                }
             }
-            catch (IOException | URISyntaxException e) {
+            else {
+                openBrowserUsingXdg(url);
             }
         }
         else {
-            Runtime runtime = Runtime.getRuntime();
-            try {
-                runtime.exec("xdg-open " + url);
-            }
-            catch (IOException e) {
-            }
+            openBrowserUsingXdg(url);
+        }
+    }
+
+    private void openBrowserUsingXdg(String url) {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec("xdg-open " + url);
+        }
+        catch (IOException e) {
         }
     }
 }
