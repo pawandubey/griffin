@@ -169,7 +169,7 @@ public class Griffin {
      * @param port the port number for the server to run on.
      */
     public void preview(Integer port) {
-        Server server = new Server(port);
+        InternalServer server = new InternalServer(port);
         server.startPreview();
         server.openBrowser();
     }
