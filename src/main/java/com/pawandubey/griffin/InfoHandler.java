@@ -46,8 +46,12 @@ public class InfoHandler {
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd HH:mm:ss");
     static String LAST_PARSE_DATE;
 
-    public InfoHandler() {
-        try (BufferedReader br = Files.newBufferedReader(Paths.get(DirectoryCrawler.INFO_FILE),
+    public InfoHandler() throws IOException {
+        final Path infoFilePath = Paths.get(DirectoryCrawler.INFO_FILE);
+        if (!Files.exists(infoFilePath)) {
+            throw new IOException(DirectoryCrawler.INFO_FILE + " doesn't exist");
+        }
+        try (BufferedReader br = Files.newBufferedReader(infoFilePath,
                                                          StandardCharsets.UTF_8)) {
             LAST_PARSE_DATE = br.readLine();
         }

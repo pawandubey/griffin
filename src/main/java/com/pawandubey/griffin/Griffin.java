@@ -15,15 +15,15 @@
  */
 package com.pawandubey.griffin;
 
-import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
-import static com.pawandubey.griffin.Data.config;
-import static com.pawandubey.griffin.Data.fileQueue;
 import com.pawandubey.griffin.cache.Cacher;
-import com.pawandubey.griffin.cli.GriffinCommand;
 import com.pawandubey.griffin.cli.NewCommand;
 import com.pawandubey.griffin.cli.PreviewCommand;
 import com.pawandubey.griffin.cli.PublishCommand;
 import com.pawandubey.griffin.model.Parsable;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.ParameterException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,47 +32,38 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.ParserProperties;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
-import org.kohsuke.args4j.spi.SubCommand;
-import org.kohsuke.args4j.spi.SubCommandHandler;
-import org.kohsuke.args4j.spi.SubCommands;
+
+import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
+import static com.pawandubey.griffin.Data.config;
+import static com.pawandubey.griffin.Data.fileQueue;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class Griffin {
+@Command(name = "griffin",
+        version = "griffin 0.3.1",
+        mixinStandardHelpOptions = true,
+        synopsisSubcommandLabel = "COMMAND",
+        subcommands = {
+                NewCommand.class,
+                PublishCommand.class,
+                PreviewCommand.class
+        },
+        description = "a simple and fast static site generator. ")
+public class Griffin implements Runnable {
 
     private final DirectoryCrawler crawler;
     private Parser parser;
     private Cacher cacher;
 
-    @Option(name = "--version", aliases = {"-v"}, handler = BooleanOptionHandler.class, usage = "print the current version")
-    private boolean version = false;
-
-    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "print help message for the command")
-    private boolean help = false;
-
-    @Argument(usage = "Execute subcommands", metaVar = "<commands>", handler = SubCommandHandler.class)
-    @SubCommands({
-        @SubCommand(name = "new", impl = NewCommand.class),
-        @SubCommand(name = "publish", impl = PublishCommand.class),
-        @SubCommand(name = "preview", impl = PreviewCommand.class)
-    })
-    public GriffinCommand commands;
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec spec;
 
     /**
      * Creates a new instance of Griffin
@@ -174,31 +165,6 @@ public class Griffin {
         server.openBrowser();
     }
 
-    private void printHelpMessage() {
-        String title = this.getClass().getPackage().getImplementationTitle();
-        String ver = this.getClass().getPackage().getImplementationVersion();
-        String author = this.getClass().getPackage().getImplementationVendor();
-        String header = title + " version " + ver + " copyright " + author;
-        String desc = "a simple and fast static site generator";
-        String usage = "usage: " + title + " [subcommand] [options..] [arguments...]";
-        String moreHelp = "run " + title + " <subcommand> " + "--help to see more help about individual subcommands";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(header).append(LINE_SEPARATOR);
-        if (this.version) {
-            System.out.println(sb.toString());
-        }
-        else {
-            sb.append(desc)
-                    .append(LINE_SEPARATOR)
-                    .append(usage)
-                    .append(LINE_SEPARATOR)
-                    .append(moreHelp)
-                    .append(LINE_SEPARATOR + LINE_SEPARATOR);
-            System.out.println(sb.toString());
-        }
-    }
-
     private void initializeConfigurationSettings(Path path, String name) throws NumberFormatException, IOException {
         String nam, tag, auth, src, out, date;// = config.getSiteName();//,
         String port;// = config.getPort();
@@ -269,7 +235,7 @@ public class Griffin {
         System.out.println("   \\_/__/                                           ");
     }
 
-    private void checkPathValidity(Path path, String name) throws FileSystemException, NotDirectoryException, FileAlreadyExistsException {
+    private void checkPathValidity(Path path, String name) throws FileSystemException {
         if (!Files.isWritable(path)) {
             System.out.println("That path doesn't seem to be writable :(" + LINE_SEPARATOR + "Check if you have write permission to that path and try again.");
             throw new java.nio.file.FileSystemException(path.toString());
@@ -284,29 +250,12 @@ public class Griffin {
         }
     }
 
-    /**
-     * @param args the command line arguments
-     * @throws java.io.IOException the exception
-     * @throws java.lang.InterruptedException the exception
-     */
-    public static void main(String[] args) throws IOException, InterruptedException {
-        try {
-            Griffin griffin = new Griffin();
-
-            CmdLineParser parser = new CmdLineParser(griffin, ParserProperties.defaults().withUsageWidth(120));
-            parser.parseArgument(args);
-
-            if (griffin.help || griffin.version || args.length == 0) {
-                griffin.printHelpMessage();
-                parser.printUsage(System.out);
-            }
-            else {
-                griffin.commands.execute();
-            }
-        }
-        catch (CmdLineException ex) {
-            Logger.getLogger(Griffin.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static void main(String[] args) {
+        System.exit(new CommandLine(new Griffin()).execute(args));
     }
 
+    @Override
+    public void run() {
+        throw new ParameterException(spec.commandLine(), "Missing required subcommand");
+    }
 }

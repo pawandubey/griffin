@@ -15,49 +15,32 @@
  */
 package com.pawandubey.griffin.cli;
 
-import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import com.pawandubey.griffin.Griffin;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.ParserProperties;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class PublishCommand implements GriffinCommand {
+@Command(name = "publish", mixinStandardHelpOptions = true,
+        description = "Publish the content in the current Griffin directory.")
+public class PublishCommand implements Callable<Integer> {
 
-    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
-    private boolean help = false;
-
-    @Option(name = "--quick", aliases = {"-q"}, handler = BooleanOptionHandler.class, usage = "Publish only the files which have changed since the last modification."
+    @Option(names = {"--quick", "-q"}, description = "Publish only the files which have changed since the last modification."
     )
     private Boolean fastParse = false;
 
-    @Option(name = "--rebuild", aliases = {"-r"}, handler = BooleanOptionHandler.class, usage = "Rebuild the site from scratch. This may take time for more number of posts.")
+    @Option(names = {"--rebuild", "-r"}, description = "Rebuild the site from scratch. This may take time for more number of posts.")
     private Boolean rebuild = false;
 
-    public PublishCommand() throws InterruptedException, IOException {
-
-    }
-
-    /**
-     * Executes the command
-     */
     @Override
-    public void execute() {
-        if (help) {
-            System.out.println("Publish the content in the current Griffin directory.");
-            System.out.println("usage: griffin publish [option]");
-            System.out.println("Options: " + LINE_SEPARATOR);
-            CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
-            parser.printUsage(System.out);
-            return;
-        }
+    public Integer call() {
         try {
             Griffin griffin = new Griffin();
             griffin.printAsciiGriffin();
@@ -66,6 +49,8 @@ public class PublishCommand implements GriffinCommand {
         }
         catch (IOException | InterruptedException ex) {
             Logger.getLogger(PublishCommand.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
         }
+        return 0;
     }
 }
