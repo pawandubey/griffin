@@ -107,7 +107,7 @@ public class DirectoryCrawler {
                 try {
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
 
-                    if (Files.probeContentType(file).equals("text/x-markdown") || Files.probeContentType(file).equals("text/markdown")) {
+                    if (file.getFileName().toString().endsWith(".md")) {
 
                         Parsable parsable = createParsable(file);
                         Data.fileQueue.put(parsable);
