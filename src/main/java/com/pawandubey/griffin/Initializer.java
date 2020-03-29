@@ -15,12 +15,10 @@
  */
 package com.pawandubey.griffin;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.zeroturnaround.zip.ZipUtil;
+
+import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  *
@@ -28,15 +26,6 @@ import org.zeroturnaround.zip.ZipUtil;
  */
 public class Initializer {
 
-    private final String zipp;// = Paths.get(ClassLoader.getSystemClassLoader().getResource(".").getPath()).getParent().toString();
-
-    public Initializer() throws URISyntaxException {
-        Path jarRootPath;
-
-        jarRootPath = Paths.get(Initializer.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-        zipp = jarRootPath.toAbsolutePath().toString();           
-        
-    }
 
     /**
      * Scaffolds out a new directory with the predefined Griffin directory
@@ -53,7 +42,7 @@ public class Initializer {
         return rootPath.resolve(name);
     }
 
-    private void unzipStructure(Path path) throws IOException {
-        ZipUtil.unpack(new File(zipp + File.separator + "scaffold.zip"), path.toFile());
+    private void unzipStructure(Path path) {
+        ZipUtil.unpack(Initializer.class.getClassLoader().getResourceAsStream("scaffold.zip"), path.toFile());
     }
 }
