@@ -1,0 +1,76 @@
+name: Maven Verify
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+      - name: Creating directory for uploading artifacts
+        run: mkdir artifacts && cp target/griffin.jar artifacts/griffin-${{github.sha}}.jar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: griffin-${{github.sha}}.jar
+          path: artifacts/griffin-${{github.sha}}.jar
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+      - name: Creating directory for uploading artifacts
+        run: mkdir artifacts && cp target/griffin.jar artifacts/griffin-${{github.sha}}.jar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: griffin-${{github.sha}}.jar
+          path: artifacts/griffin-${{github.sha}}.jar
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+        run: mvn --batch-mode --update-snapshots verify
+      - name: Creating directory for uploading artifacts
+        run: mkdir artifacts && cp target/griffin.jar artifacts/griffin-${{github.sha}}.jar
+      - uses: actions/upload-artifact@v2
+        with:
+          name: griffin-${{github.sha}}.jar
+          path: artifacts/griffin-${{github.sha}}.jar
