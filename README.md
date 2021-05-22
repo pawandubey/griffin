@@ -1,5 +1,5 @@
 # griffin
-![Build Status](https://github.com/pawandubey/griffin/actions/workflows/maven_verify/badge.svg)
+![Build Status](https://github.com/pawandubey/griffin/actions/workflows/maven_verify.yml/badge.svg)
 ````
                        ___     ___
                 __   /'___\  /'___\  __
