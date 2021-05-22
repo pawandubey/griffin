@@ -107,7 +107,7 @@ public class DirectoryCrawler {
                 try {
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
 
-                    if (Files.probeContentType(file).equals("text/x-markdown") || Files.probeContentType(file).equals("text/markdown")) {
+                    if (isMarkdownFile(file)) {
 
                         Parsable parsable = createParsable(file);
                         Data.fileQueue.put(parsable);
@@ -168,7 +168,7 @@ public class DirectoryCrawler {
                     LocalDateTime fileModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
                     LocalDateTime lastParse = LocalDateTime.parse(InfoHandler.LAST_PARSE_DATE, InfoHandler.formatter);
                     Path resolvedPath = Paths.get(OUTPUT_DIRECTORY).resolve(rootPath.relativize(file));
-                    if (Files.probeContentType(file).equals("text/x-markdown")) {
+                    if (isMarkdownFile(file)) {
                         if (fileModified.isAfter(lastParse)) {
                             Parsable parsable = createParsable(file);
                             Data.fileQueue.removeIf(p -> p.getPermalink().equals(parsable.getPermalink()));
@@ -311,5 +311,14 @@ public class DirectoryCrawler {
         });
 
         System.out.println("Copying done.");
+    }
+
+    /**
+     * Checks whether the file is a markdown file
+     * @return if the file at path is a markdown file
+     * @throws IOException the excpetion
+     */
+    private boolean isMarkdownFile(Path file) throws IOException {
+        return file.getFileName().toString().endsWith(".md");
     }
 }
