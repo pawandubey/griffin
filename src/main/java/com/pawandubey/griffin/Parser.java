@@ -138,7 +138,7 @@ public class Parser {
             }
         }
 
-        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml")) && Files.exists(Paths.get(HandlebarsRenderer.templateRoot).resolve("feed.htm;"))) {
+        if (Files.notExists(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml")) && Files.exists(Paths.get(HandlebarsRenderer.templateRoot).resolve("feed.html"))) {
             try (BufferedWriter bw = Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY).resolve("feed.xml"), StandardCharsets.UTF_8)) {
                 bw.write(renderer.renderRssFeed());
             }
@@ -202,7 +202,7 @@ public class Parser {
                     }
 
                     List<Parsable> parsables = tags.get(a);
-                    
+
                     for (Parsable p : parsables) {
                         Path slugPath = tagDir.resolve(p.getSlug());
                         if (Files.notExists(slugPath)) {
@@ -223,9 +223,9 @@ public class Parser {
                             }
                         }
                     }
-                    
+
                     if (lock.tryLock()) {
-                        try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {                           
+                        try (BufferedWriter bw = Files.newBufferedWriter(tagDir.resolve("index.html"), StandardCharsets.UTF_8)) {
                             bw.write(renderer.renderTagIndex(a, parsables));
                         }
                         catch (IOException ex) {
