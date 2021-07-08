@@ -18,9 +18,11 @@ package com.pawandubey.griffin;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.zeroturnaround.zip.ZipUtil;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  *
@@ -49,11 +51,25 @@ public class Initializer {
      */
     public Path scaffold(Path rootPath, String name) throws IOException {
         //DirectoryCrawler.ROOT_DIRECTORY = rootPath.resolve(name).toAbsolutePath().normalize().toString();
-        unzipStructure(rootPath.resolve(name));
+        unzip(rootPath.resolve(name));
         return rootPath.resolve(name);
     }
 
-    private void unzipStructure(Path path) throws IOException {
-        ZipUtil.unpack(new File(zipp + File.separator + "scaffold.zip"), path.toFile());
+    public void unzip(Path targetDir) throws IOException {
+        if (!Files.exists(targetDir)) {
+            Files.createDirectory(targetDir);
+        }
+        final File file = new File(zipp + File.separator + "scaffold.zip");
+        try (ZipInputStream zipIn = new ZipInputStream(Files.newInputStream(file.toPath()))) {
+            for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null; ) {
+                Path resolvedPath = targetDir.resolve(ze.getName());
+                if (ze.isDirectory()) {
+                    Files.createDirectory(resolvedPath);
+                } else {
+                    Files.createDirectories(resolvedPath.getParent());
+                    Files.copy(zipIn, resolvedPath);
+                }
+            }
+        }
     }
 }
