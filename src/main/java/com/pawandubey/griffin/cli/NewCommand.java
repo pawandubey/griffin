@@ -15,62 +15,42 @@
  */
 package com.pawandubey.griffin.cli;
 
-import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
 import com.pawandubey.griffin.Griffin;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.ParserProperties;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
 
 /**
- *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class NewCommand implements GriffinCommand {
-    @Argument(usage = "creates a new skeleton site at the given path", metaVar = "<path>")
-    public List<String> args = new ArrayList<>();//
+@Command(name = "new",
+		description = "Scaffold out a new Griffin directory structure.")
+public class NewCommand implements Callable<Integer> {
 
-    Path filePath;
+	@Parameters(description = "creates a new skeleton site at the given path", paramLabel = "<PATH>")
+	public File file;
 
-    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
-    private boolean help = false;
+	@Option(names = {"--name", "-n"}, paramLabel = "<FOLDER_NAME>", description = "name of the directory to be created")
+	private String name = "griffin";
 
-    @Option(name = "-name", aliases = {"-n"}, metaVar = "<folder_name>", usage = "name of the directory to be created")
-    private String name = "griffin";
+	@Override
+	public Integer call() {
+		try {
 
-    /**
-     * Executes the command
-     */
-    @Override
-    public void execute() {
-        try {
-
-            if (help || args.isEmpty()) {
-                System.out.println("Scaffold out a new Griffin directory structure.");
-                System.out.println("usage: griffin new [option] <path>");
-                System.out.println("Options: " + LINE_SEPARATOR);
-                CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
-                parser.printUsage(System.out);
-                return;
-            }
-            else {
-                filePath = Paths.get(args.get(0));
-            }
-            Griffin griffin = new Griffin(filePath.resolve(name));
-            griffin.initialize(filePath, name);
-            System.out.println("Successfully created new site.");
-        }
-        catch (IOException | URISyntaxException ex) {
-            Logger.getLogger(NewCommand.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+			Griffin griffin = new Griffin(file.toPath().resolve(name));
+			griffin.initialize(file.toPath(), name);
+			System.out.println("Successfully created new site.");
+		} catch (IOException | URISyntaxException ex) {
+			Logger.getLogger(NewCommand.class.getName()).log(Level.SEVERE, null, ex);
+			return -1;
+		}
+		return 0;
+	}
 }

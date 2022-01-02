@@ -15,44 +15,40 @@
  */
 package com.pawandubey.griffin.cli;
 
-import static com.pawandubey.griffin.Configurator.LINE_SEPARATOR;
-import static com.pawandubey.griffin.Data.config;
 import com.pawandubey.griffin.Griffin;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.ParserProperties;
-import org.kohsuke.args4j.spi.BooleanOptionHandler;
-import org.kohsuke.args4j.spi.IntOptionHandler;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.pawandubey.griffin.Data.config;
 
 /**
  *
  * @author Pawan Dubey pawandubey@outlook.com
  */
-public class PreviewCommand implements GriffinCommand {
+@Command(name = "preview", mixinStandardHelpOptions = true,
+        description = "Preview the site on the given port: default: 9090")
+public class PreviewCommand implements Callable<Integer> {
 
-    @Option(name = "--port", aliases = {"-p"}, metaVar = "<port_number>", handler = IntOptionHandler.class, usage = "Port on which to launch the preview. Default to your configuredData. port.")
+    @Option(names = {"--port", "-p"}, paramLabel = "<PORT>", description = "Port on which to launch the preview. Default to your configuredData. port.")
     private Integer port = config.getPort();
 
-    @Option(name = "--help", aliases = {"-h"}, handler = BooleanOptionHandler.class, usage = "find help about this command")
-    private boolean help = false;
-
-    /**
-     * Executes the command
-     */
     @Override
-    public void execute() {
-        Griffin griffin = new Griffin();
-        if (help) {
-            System.out.println("Preview the site on the given port: default: 9090");
-            System.out.println("usage: griffin preview [option]");
-            System.out.println("Options: " + LINE_SEPARATOR);
-            CmdLineParser parser = new CmdLineParser(this, ParserProperties.defaults().withUsageWidth(120));
-            parser.printUsage(System.out);
-        }
-        else {
+    public Integer call() {
+        try {
+            Griffin griffin = new Griffin();
             griffin.printAsciiGriffin();
             System.out.println("Starting preview on port " + port);
             griffin.preview(port);
         }
+        catch (Exception ex) {
+            Logger.getLogger(PublishCommand.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
+
+        return 0;
     }
 }
