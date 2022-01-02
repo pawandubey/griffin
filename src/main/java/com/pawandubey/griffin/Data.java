@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 /**
  * Holds all the data objects which will be sent to the Renderer for parsing.
@@ -55,8 +56,11 @@ public class Data {
     /**
      * @return the latestPosts
      */
-    public Set<Parsable> getLatestPosts() {
-        return latestPosts;
+    public List<Parsable> getLatestPosts() {
+        return latestPosts
+                .stream()
+                .sorted((a, b) -> b.getDate().compareTo(a.getDate()))
+                .collect(Collectors.toList());
     }
 
     /**

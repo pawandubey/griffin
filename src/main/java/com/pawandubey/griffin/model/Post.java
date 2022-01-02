@@ -22,6 +22,7 @@ import static com.pawandubey.griffin.DirectoryCrawler.SOURCE_DIRECTORY;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -97,8 +98,18 @@ public class Post implements Parsable {
         return date;
     }
 
+    /**
+     * @return the date formatted as per the date format config value
+     */
     public String getPrettyDate() {
         return prettyDate;
+    }
+
+    /**
+     * @return the date formatted as per RFC 1123 format, for use in RSS fields
+     */
+    public String getRssDate() {
+        return date.atStartOfDay(ZoneId.systemDefault()).format(DateTimeFormatter.RFC_1123_DATE_TIME);
     }
 
     /**

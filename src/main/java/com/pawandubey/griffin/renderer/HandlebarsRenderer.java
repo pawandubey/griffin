@@ -148,6 +148,7 @@ public class HandlebarsRenderer implements Renderer {
         Map<String, Object> map = new HashMap<>();
         map.put("config", Data.config);
         map.put("data", Data.datum);
+        map.put("latestPosts", Data.datum.getLatestPosts());
         return rssTemplate.apply(map);
     }
 
