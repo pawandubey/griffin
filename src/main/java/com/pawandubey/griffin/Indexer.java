@@ -33,7 +33,20 @@ public class Indexer {
     private final List<SingleIndex> indexList;
     private final Queue<Parsable> queue;
     public static final Integer postsPerIndex = config.getIndexPosts();
-    public static final int totalIndexes = (fileQueue.size() / postsPerIndex) + 1;
+    public static final int totalIndexes = getTotalIndexes(fileQueue.size(), postsPerIndex);
+
+    /**
+     * Returns the number of index pages given the total number of posts and posts per index.
+     * @param totalPosts Total number of posts to divide into index pages
+     * @param perIndex Number of posts per index page
+     * @return The total number of index pages
+     */
+    public static int getTotalIndexes(int totalPosts, Integer perIndex) {
+        if (perIndex == 0) {
+            return 1;
+        }
+        return Math.max(1, (totalPosts + (perIndex - 1)) / perIndex);
+    }
 
     /**
      * Creates a new indexer with a list of indexes and a sorted queue of
